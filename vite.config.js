@@ -21,14 +21,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
+    // NO manualChunks: splitting React into a separate vendor chunk caused
+    // React internals (e.g. useMemo, minified to "Re") to be undefined at call
+    // time => "Re is not a function". Single bundle = correct init order.
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
-          'ui-vendor': ['framer-motion', 'lucide-react']
-        }
+        manualChunks: undefined
       }
     }
   },
