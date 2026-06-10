@@ -5,8 +5,8 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/((?!assets/|favicon\\.ico|.*\\.[a-zA-Z0-9]+$).*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [

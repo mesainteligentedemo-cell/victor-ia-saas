@@ -61,13 +61,24 @@ export default {
     function ({ addUtilities }) {
       addUtilities({
         '.text-gradient': {
-          '@apply bg-gradient-to-r from-accent-cyan to-accent-blue bg-clip-text text-transparent': {}
+          background: 'linear-gradient(to right, #00d9ff, #0066ff)',
+          '-webkit-background-clip': 'text',
+          'background-clip': 'text',
+          color: 'transparent'
         },
         '.card-dark': {
-          '@apply bg-dark-800 border border-dark-700 rounded-lg shadow-card': {}
+          backgroundColor: '#1a1f3a',
+          border: '1px solid #2d3556',
+          borderRadius: '0.5rem',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
         },
         '.btn-primary': {
-          '@apply px-4 py-2 rounded bg-gradient-to-r from-accent-cyan to-accent-blue text-dark-900 font-semibold hover:opacity-90 transition-all': {}
+          padding: '0.5rem 1rem',
+          borderRadius: '0.25rem',
+          background: 'linear-gradient(to right, #00d9ff, #0066ff)',
+          color: '#0a0e27',
+          fontWeight: '600',
+          transition: 'all 0.2s'
         }
       })
     }
