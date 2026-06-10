@@ -3,30 +3,22 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "public": true,
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/:path*"
-    },
-    {
-      "source": "/assets/:path*",
-      "destination": "/assets/:path*"
-    },
-    {
-      "source": "/:path*.js",
-      "destination": "/:path*.js"
-    },
-    {
-      "source": "/:path*.css",
-      "destination": "/:path*.css"
-    },
-    {
-      "source": "/:path*.ico",
-      "destination": "/:path*.ico"
-    },
+      "destination": "https://victor-ia-orchestration-production.up.railway.app/api/:path*"
+    }
+  ],
+  "headers": [
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
     }
   ]
 }

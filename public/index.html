@@ -24,19 +24,8 @@
 <meta name="twitter:title" content="Victor IA — Harness Engineer Platform">
 <meta name="twitter:description" content="Orquestación multiagente de clase mundial. Construido en 24 horas con IA.">
 
-<!-- ============ SESSION ROUTER (corre ANTES del primer paint) ============ -->
-<script>
-(function () {
-  try {
-    var token = localStorage.getItem('session_token');
-    // Token válido = vtk_/gtk_ (auth.html) o vi_ (dashboard.html)
-    if (token && /^([a-z]tk_|vi_)[a-z0-9]+$/i.test(token)) {
-      // Sesión activa → directo al dashboard, sin flash de landing
-      location.replace('/dashboard.html');
-    }
-  } catch (e) { /* localStorage bloqueado → mostrar landing */ }
-})();
-</script>
+<!-- ============ LANDING PAGE — Mostrar siempre ============ -->
+<!-- Session router desactivado: cada URL sirve su contenido específico -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
