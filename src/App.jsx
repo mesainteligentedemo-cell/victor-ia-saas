@@ -54,17 +54,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 /* Constants                                                           */
 /* ------------------------------------------------------------------ */
 
+const BACKEND_URL =
+  (typeof import.meta !== 'undefined' &&
+    import.meta.env &&
+    import.meta.env.VITE_BACKEND_URL) ||
+  'https://victor-ia-orchestration-production.up.railway.app';
+
 const WS_URL =
   (typeof import.meta !== 'undefined' &&
     import.meta.env &&
     import.meta.env.VITE_WS_URL) ||
-  'ws://localhost:8080/ws/chat';
+  `${BACKEND_URL}/ws/chat`;
 
 const API_URL =
   (typeof import.meta !== 'undefined' &&
     import.meta.env &&
     import.meta.env.VITE_API_URL) ||
-  '/api/chat';
+  `${BACKEND_URL}/api/prompt`;
 
 const STREAM_CHARS_PER_FRAME = 2; // reveal speed for the client-side streamer
 const HTTP_TIMEOUT_MS = 10000; // 10s before giving up on a single attempt
@@ -218,7 +224,7 @@ export default function App() {
   const scrollRef = useRef(null);
   const pendingSince = useRef(null);
 
-  const voiceSupported = useMemo(() => isVoiceSupported(), []);
+  const voiceSupported = useMemo(() => isVoiceSupported, []);
 
   /* ---------------- theme ---------------- */
   useEffect(() => {
