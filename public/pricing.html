@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VICTOR IA — Precios</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0F0D0A; --bg1: #1A1815; --bg2: #242118;
+  --text: #F5F3F0; --text-muted: #B8B5B0; --text-dim: #8B8884;
+  --accent: #C9A961; --accent2: #E8D4B8;
+  --success: #7BC9A3;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; overflow-x: hidden; }
+
+header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 24px 48px; position: sticky; top: 0; z-index: 100;
+  background: rgba(36,33,24,0.8); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(201,169,97,0.15);
+}
+.logo {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -1px;
+  background: linear-gradient(135deg, #C9A961, #E8D4B8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  text-decoration: none;
+}
+header nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; margin-left: 32px; font-weight: 500; transition: color .3s; }
+header nav a:hover { color: var(--accent); }
+
+.hero { text-align: center; padding: 90px 24px 50px; position: relative; overflow: hidden; }
+.hero::before {
+  content: ''; position: absolute; top: -60%; right: -15%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(201,169,97,0.1) 0%, transparent 70%);
+  border-radius: 50%; animation: float 20s ease-in-out infinite; pointer-events: none;
+}
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(30px); } }
+.hero h1 {
+  font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;
+  font-size: 60px; letter-spacing: -2px; line-height: 1.1; margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero p { font-size: 17px; color: var(--text-muted); max-width: 560px; margin: 0 auto; }
+
+/* TIERS */
+.tiers {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 28px; max-width: 1140px; margin: 40px auto 0; padding: 0 24px 80px;
+}
+.tier {
+  position: relative;
+  background: linear-gradient(135deg, rgba(201,169,97,0.05), rgba(232,212,184,0.02));
+  border: 1px solid rgba(201,169,97,0.15); border-radius: 16px;
+  padding: 40px 32px; display: flex; flex-direction: column;
+  transition: all .4s cubic-bezier(.23,1,.32,1);
+}
+.tier:hover { transform: translateY(-8px); border-color: rgba(201,169,97,0.4); box-shadow: 0 16px 64px rgba(201,169,97,0.12); }
+.tier.popular { border-color: rgba(201,169,97,0.5); background: linear-gradient(135deg, rgba(201,169,97,0.1), rgba(232,212,184,0.04)); }
+.badge {
+  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #C9A961, #E8D4B8); color: #0F0D0A;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  padding: 5px 18px; border-radius: 99px; box-shadow: 0 8px 24px rgba(201,169,97,0.3);
+}
+.tier .name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.tier .price { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 52px; color: var(--text); line-height: 1; }
+.tier .price small { font-family: 'Inter', sans-serif; font-style: normal; font-size: 14px; color: var(--text-dim); }
+.tier .desc { font-size: 13px; color: var(--text-muted); margin: 12px 0 24px; min-height: 40px; }
+.tier ul { list-style: none; margin-bottom: 28px; flex: 1; }
+.tier li { font-size: 14px; color: var(--text-muted); padding: 8px 0; border-bottom: 1px solid rgba(201,169,97,0.08); display: flex; gap: 10px; align-items: flex-start; }
+.tier li::before { content: '✓'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+.btn {
+  display: block; width: 100%; text-align: center; padding: 15px; border-radius: 12px;
+  cursor: pointer; text-decoration: none; border: none;
+  font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px;
+  text-transform: uppercase; letter-spacing: .5px;
+  transition: all .4s cubic-bezier(.23,1,.32,1);
+}
+.btn-gold { background: linear-gradient(135deg, #C9A961, #E8D4B8); color: #0F0D0A; box-shadow: 0 12px 40px rgba(201,169,97,0.25); }
+.btn-gold:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 20px 60px rgba(201,169,97,0.35); }
+.btn-gold:disabled { opacity: .6; cursor: wait; }
+.btn-outline { background: transparent; border: 1px solid rgba(201,169,97,0.4); color: var(--accent); }
+.btn-outline:hover { background: rgba(201,169,97,0.1); border-color: var(--accent); }
+
+/* COMPARATIVA */
+.section { max-width: 1140px; margin: 0 auto; padding: 60px 24px; }
+.section h2 {
+  font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;
+  font-size: 42px; text-align: center; color: var(--accent); margin-bottom: 48px;
+}
+.table-wrap { overflow-x: auto; border: 1px solid rgba(201,169,97,0.15); border-radius: 16px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 14px; }
+th, td { padding: 16px 20px; text-align: center; border-bottom: 1px solid rgba(201,169,97,0.1); }
+th { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--accent); background: rgba(201,169,97,0.06); }
+td:first-child, th:first-child { text-align: left; color: var(--text-muted); }
+td { color: var(--text-muted); }
+td .yes { color: var(--success); font-weight: 700; }
+td .no { color: var(--text-dim); }
+tr:last-child td { border-bottom: none; }
+th.pop { background: rgba(201,169,97,0.14); }
+td.pop { background: rgba(201,169,97,0.04); }
+
+/* FAQ */
+.faq-item { border: 1px solid rgba(201,169,97,0.15); border-radius: 12px; margin-bottom: 14px; overflow: hidden; background: linear-gradient(135deg, rgba(201,169,97,0.04), transparent); }
+.faq-q {
+  width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 20px 24px; background: transparent; border: none; cursor: pointer;
+  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); text-align: left;
+  transition: color .3s;
+}
+.faq-q:hover { color: var(--accent); }
+.faq-q .chev { transition: transform .3s; color: var(--accent); flex-shrink: 0; }
+.faq-item.open .chev { transform: rotate(180deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .4s cubic-bezier(.23,1,.32,1); }
+.faq-item.open .faq-a { max-height: 240px; }
+.faq-a p { padding: 0 24px 20px; font-size: 14px; color: var(--text-muted); }
+
+/* SUCCESS OVERLAY (mock Stripe success page) */
+.overlay {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(15,13,10,0.92); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.overlay.show { display: flex; }
+.overlay .panel {
+  max-width: 480px; width: 100%; text-align: center;
+  background: linear-gradient(135deg, rgba(201,169,97,0.08), rgba(232,212,184,0.03));
+  border: 1px solid rgba(201,169,97,0.3); border-radius: 20px; padding: 56px 40px;
+  animation: fadeInUp .6s cubic-bezier(.23,1,.32,1);
+}
+@keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+.overlay .check {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 24px;
+  background: linear-gradient(135deg, #C9A961, #E8D4B8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; color: #0F0D0A; box-shadow: 0 16px 48px rgba(201,169,97,0.35);
+}
+.overlay h3 { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; font-size: 34px; color: var(--accent); margin-bottom: 12px; }
+.overlay p { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+.overlay .panel .btn { margin-top: 10px; }
+
+.spinner-text { display: none; text-align: center; color: var(--text-muted); font-size: 14px; padding: 14px; }
+
+footer { padding: 36px 48px; border-top: 1px solid rgba(201,169,97,0.15); text-align: center; color: var(--text-dim); font-size: 12px; margin-top: 40px; }
+
+@media (max-width: 768px) {
+  header { padding: 18px 24px; }
+  header nav a { margin-left: 14px; font-size: 12px; }
+  .hero h1 { font-size: 38px; }
+  .section h2 { font-size: 30px; }
+  .tier .price { font-size: 42px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="pricing.html">VICTOR IA</a>
+  <nav>
+    <a href="#tiers">Planes</a>
+    <a href="#compare">Comparar</a>
+    <a href="#faq">FAQs</a>
+    <a href="auth.html">Login</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Precios simples, valor enterprise</h1>
+  <p>Automatiza prospecting, check-in, CRM y collections de tu operación timeshare. Empieza gratis, escala cuando tu equipo lo necesite.</p>
+</section>
+
+<!-- TIERS -->
+<section class="tiers" id="tiers">
+
+  <div class="tier">
+    <div class="name">Freemium</div>
+    <div class="price">$0 <small>/ 24h gratis</small></div>
+    <p class="desc">Prueba la plataforma sin tarjeta. Acceso completo al chat por 24 horas.</p>
+    <ul>
+      <li>24 horas de acceso gratis</li>
+      <li>Chat básico con IA</li>
+      <li>100 tokens gratis incluidos</li>
+      <li>1 usuario</li>
+      <li>Sin tarjeta de crédito</li>
+    </ul>
+    <a class="btn btn-gold" href="auth.html?plan=freemium">Empezar ahora</a>
+  </div>
+
+  <div class="tier popular">
+    <div class="badge">Popular</div>
+    <div class="name">Teams</div>
+    <div class="price">$499 <small>/mes base + tokens</small></div>
+    <p class="desc">Para equipos de ventas y operación que necesitan la suite completa.</p>
+    <ul>
+      <li>Chat IA avanzado ilimitado*</li>
+      <li>Dashboard en tiempo real</li>
+      <li>Tracker de actividad y comisiones</li>
+      <li>CRM centralizado (leads + pipeline)</li>
+      <li>Tokens adicionales: $0.01 c/u</li>
+      <li>Hasta 15 usuarios</li>
+      <li>Soporte por email (24h respuesta)</li>
+    </ul>
+    <button class="btn btn-gold" id="btn-subscribe" onclick="subscribeTeams()">Subscribe</button>
+    <div class="spinner-text" id="checkout-loading">Creando sesión de checkout en Stripe…</div>
+  </div>
+
+  <div class="tier">
+    <div class="name">Enterprise</div>
+    <div class="price" style="font-size:40px; padding:6px 0;">Custom <small>pricing</small></div>
+    <p class="desc">Para cadenas de resorts con necesidades de integración y compliance.</p>
+    <ul>
+      <li>Todo lo de Teams, ilimitado</li>
+      <li>Infraestructura dedicada</li>
+      <li>Implementación guiada (4 semanas)</li>
+      <li>SLA 99.9% garantizado</li>
+      <li>SSO + roles y permisos</li>
+      <li>Integraciones custom (API)</li>
+      <li>Account manager dedicado</li>
+    </ul>
+    <a class="btn btn-outline" href="mailto:ventas@victor-ia.com?subject=Demo%20Enterprise%20VICTOR%20IA&body=Hola%2C%20quiero%20agendar%20una%20demo%20Enterprise." onclick="trackDemo()">Agendar demo</a>
+  </div>
+
+</section>
+
+<!-- COMPARATIVA -->
+<section class="section" id="compare">
+  <h2>Compara los planes</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Freemium</th>
+          <th class="pop">Teams</th>
+          <th>Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Chat con IA</td><td><span class="yes">Básico</span></td><td class="pop"><span class="yes">Avanzado</span></td><td><span class="yes">Avanzado + custom</span></td></tr>
+        <tr><td>Tokens incluidos</td><td>100 (one-time)</td><td class="pop">10,000/mes + $0.01 c/u extra</td><td>Ilimitados</td></tr>
+        <tr><td>Dashboard en tiempo real</td><td><span class="no">—</span></td><td class="pop"><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+        <tr><td>Tracker de actividad</td><td><span class="no">—</span></td><td class="pop"><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+        <tr><td>CRM (leads + pipeline)</td><td><span class="no">—</span></td><td class="pop"><span class="yes">✓</span></td><td><span class="yes">✓ + integraciones</span></td></tr>
+        <tr><td>Usuarios</td><td>1</td><td class="pop">Hasta 15</td><td>Ilimitados</td></tr>
+        <tr><td>Soporte</td><td>Comunidad</td><td class="pop">Email (24h)</td><td>Dedicado + AM</td></tr>
+        <tr><td>SLA</td><td><span class="no">—</span></td><td class="pop">99.5%</td><td><span class="yes">99.9% garantizado</span></td></tr>
+        <tr><td>SSO + roles</td><td><span class="no">—</span></td><td class="pop"><span class="no">—</span></td><td><span class="yes">✓</span></td></tr>
+        <tr><td>Implementación guiada</td><td><span class="no">—</span></td><td class="pop"><span class="no">Self-serve</span></td><td><span class="yes">✓ (4 semanas)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq" style="max-width:760px">
+  <h2>Preguntas frecuentes</h2>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">¿Qué pasa cuando terminan mis 24 horas de Freemium? <span class="chev">▾</span></button>
+    <div class="faq-a"><p>Tu cuenta no se borra: conservas tu historial de chat y configuración. Para seguir usando la plataforma solo necesitas elegir Teams o contactarnos para Enterprise. Los 100 tokens gratis no expiran mientras tengas cuenta activa.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">¿Cómo funcionan los tokens en el plan Teams? <span class="chev">▾</span></button>
+    <div class="faq-a"><p>Teams incluye 10,000 tokens al mes en la base de $499. Si tu equipo consume más, cada token adicional cuesta $0.01 y se factura al final del ciclo. Puedes fijar un límite mensual de gasto desde el dashboard para evitar sorpresas.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">¿Puedo cancelar en cualquier momento? <span class="chev">▾</span></button>
+    <div class="faq-a"><p>Sí. Teams es mes a mes, sin contratos forzosos. Cancelas desde Settings → Billing y mantienes acceso hasta el final del ciclo ya pagado. Enterprise se rige por el contrato anual acordado, con cláusula de salida a 30 días.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">¿Ofrecen reembolsos (refunds)? <span class="chev">▾</span></button>
+    <div class="faq-a"><p>Ofrecemos garantía de 14 días en tu primer mes de Teams: si la plataforma no es para ti, te devolvemos el 100% de la base mensual. Los tokens ya consumidos no son reembolsables. Para Enterprise, los términos de refund se definen en el contrato.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">¿Puedo cambiar de plan (upgrade / downgrade)? <span class="chev">▾</span></button>
+    <div class="faq-a"><p>Sí, en cualquier momento. El upgrade de Freemium a Teams es inmediato y prorrateado. El downgrade aplica al inicio del siguiente ciclo de facturación. De Teams a Enterprise, nuestro equipo migra tus datos sin downtime.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">¿Qué métodos de pago aceptan? <span class="chev">▾</span></button>
+    <div class="faq-a"><p>Procesamos pagos con Stripe: tarjetas de crédito/débito (Visa, Mastercard, Amex) y transferencia para planes anuales. Enterprise también puede pagar por factura (NET-30). Todos los precios están en USD; emitimos factura fiscal (CFDI) para México.</p></div>
+  </div>
+</section>
+
+<!-- SUCCESS OVERLAY (mock Stripe success page) -->
+<div class="overlay" id="success-overlay" role="dialog" aria-modal="true">
+  <div class="panel">
+    <div class="check">✓</div>
+    <h3>¡Pago exitoso!</h3>
+    <p id="success-detail">Tu suscripción a <strong>Teams</strong> está activa. Recibirás la factura por email. Bienvenido a VICTOR IA.</p>
+    <a class="btn btn-gold" href="auth.html?plan=teams">Crear mi cuenta →</a>
+    <button class="btn btn-outline" style="margin-top:12px" onclick="closeSuccess()">Volver a precios</button>
+  </div>
+</div>
+
+<footer>© 2026 VICTOR IA. Plataforma SaaS de automatización timeshare. Precios en USD. Stripe checkout en modo test.</footer>
+
+<script>
+/* ============================================================
+   MOCK BACKEND — intercepta fetch('/api/...') y simula Stripe
+   Endpoint: POST /api/stripe/create-checkout
+   ============================================================ */
+(function () {
+  const realFetch = window.fetch.bind(window);
+  const delay = (ms) => new Promise(r => setTimeout(r, ms));
+  window.fetch = async function (url, opts = {}) {
+    if (typeof url !== 'string' || !url.startsWith('/api/')) return realFetch(url, opts);
+    await delay(800 + Math.random() * 600); // latencia simulada de Stripe
+    const json = (status, data) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
+
+    if (url === '/api/stripe/create-checkout' && (opts.method || 'GET') === 'POST') {
+      const body = opts.body ? JSON.parse(opts.body) : {};
+      const session = {
+        id: 'cs_test_' + Math.random().toString(36).slice(2),
+        plan: body.plan || 'teams',
+        amount: body.plan === 'teams' ? 49900 : 0, // centavos USD
+        currency: 'usd',
+        status: 'complete',
+        created: Date.now(),
+        // En producción esto sería la URL real de Stripe Checkout:
+        url: 'pricing.html?checkout=success&session_id=cs_test_mock'
+      };
+      localStorage.setItem('stripe_checkout_session', JSON.stringify(session));
+      localStorage.setItem('user_plan', session.plan);
+      localStorage.setItem('subscription_status', 'active');
+      localStorage.setItem('subscription_started_at', new Date().toISOString());
+      return json(200, { ok: true, session });
+    }
+    return json(404, { ok: false, error: 'Endpoint no encontrado: ' + url });
+  };
+})();
+
+/* ============================================================
+   UI — checkout, FAQs, success page
+   ============================================================ */
+async function subscribeTeams() {
+  const btn = document.getElementById('btn-subscribe');
+  const loading = document.getElementById('checkout-loading');
+  btn.disabled = true; btn.textContent = 'Procesando…';
+  loading.style.display = 'block';
+  try {
+    const res = await fetch('/api/stripe/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: 'teams', priceId: 'price_test_teams_499', quantity: 1 })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      // "Redirect" a la success page mock de Stripe
+      window.location.href = data.session.url;
+    }
+  } finally {
+    btn.disabled = false; btn.textContent = 'Subscribe';
+    loading.style.display = 'none';
+  }
+}
+
+function trackDemo() {
+  localStorage.setItem('demo_requested', JSON.stringify({ plan: 'enterprise', at: new Date().toISOString() }));
+}
+
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+function closeSuccess() {
+  document.getElementById('success-overlay').classList.remove('show');
+  history.replaceState(null, '', 'pricing.html');
+}
+
+/* Success page: pricing.html?checkout=success */
+(function () {
+  const params = new URLSearchParams(location.search);
+  if (params.get('checkout') === 'success') {
+    let detail = document.getElementById('success-detail');
+    try {
+      const s = JSON.parse(localStorage.getItem('stripe_checkout_session') || 'null');
+      if (s) detail.innerHTML = 'Tu suscripción a <strong>' + (s.plan === 'teams' ? 'Teams ($499/mes)' : s.plan) + '</strong> está activa.<br>Session: <code>' + s.id + '</code>. Recibirás la factura por email.';
+    } catch {}
+    document.getElementById('success-overlay').classList.add('show');
+  }
+})();
+</script>
+</body>
+</html>

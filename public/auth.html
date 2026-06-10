@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VICTOR IA — Acceso</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0F0D0A; --bg1: #1A1815; --bg2: #242118;
+  --text: #F5F3F0; --text-muted: #B8B5B0; --text-dim: #8B8884;
+  --accent: #C9A961; --accent2: #E8D4B8;
+  --error: #E07A6B; --success: #7BC9A3;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; display: flex; flex-direction: column;
+  line-height: 1.65; overflow-x: hidden;
+}
+header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 24px 48px;
+  background: rgba(36, 33, 24, 0.8); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(201, 169, 97, 0.15);
+}
+.logo {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #C9A961, #E8D4B8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  text-decoration: none;
+}
+header nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; margin-left: 32px; font-weight: 500; transition: color .3s; }
+header nav a:hover { color: var(--accent); }
+
+.auth-wrap {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 64px 24px; position: relative;
+}
+.auth-wrap::before {
+  content: ''; position: absolute; top: -20%; right: -10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(201,169,97,0.1) 0%, transparent 70%);
+  border-radius: 50%; animation: float 20s ease-in-out infinite; pointer-events: none;
+}
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(30px); } }
+
+.card {
+  width: 100%; max-width: 460px; position: relative; z-index: 5;
+  background: linear-gradient(135deg, rgba(201,169,97,0.05), rgba(232,212,184,0.02));
+  border: 1px solid rgba(201,169,97,0.15); border-radius: 16px;
+  padding: 40px; animation: fadeInUp .8s cubic-bezier(.23,1,.32,1);
+}
+@keyframes fadeInUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+.card h1 {
+  font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;
+  font-size: 38px; letter-spacing: -1px; margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.card .sub { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 28px; background: rgba(15,13,10,0.6); border-radius: 10px; padding: 4px; }
+.tab {
+  flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--text-dim); border: none; background: transparent; transition: all .3s;
+  font-family: 'Inter', sans-serif;
+}
+.tab.active { background: linear-gradient(135deg, #C9A961, #E8D4B8); color: #0F0D0A; }
+
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); margin-bottom: 6px; }
+.field input, .field select {
+  width: 100%; padding: 13px 16px; border-radius: 10px;
+  background: rgba(15,13,10,0.6); border: 1px solid rgba(201,169,97,0.2);
+  color: var(--text); font-size: 15px; font-family: 'Inter', sans-serif;
+  transition: border-color .3s, box-shadow .3s; outline: none;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201,169,97,0.12); }
+.field input.invalid { border-color: var(--error); }
+.field .err { display: none; font-size: 12px; color: var(--error); margin-top: 5px; }
+.field.show-err .err { display: block; }
+.field select option { background: var(--bg1); }
+
+.row-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 13px; }
+.remember { display: flex; align-items: center; gap: 8px; color: var(--text-muted); cursor: pointer; user-select: none; }
+.remember input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+.forgot { color: var(--accent); text-decoration: none; }
+.forgot:hover { text-decoration: underline; }
+
+.btn {
+  width: 100%; padding: 15px; border: none; border-radius: 12px; cursor: pointer;
+  background: linear-gradient(135deg, #C9A961, #E8D4B8); color: #0F0D0A;
+  font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: .5px;
+  font-family: 'Inter', sans-serif;
+  transition: all .4s cubic-bezier(.23,1,.32,1);
+  box-shadow: 0 12px 40px rgba(201,169,97,0.25);
+}
+.btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 20px 60px rgba(201,169,97,0.35); }
+.btn:disabled { opacity: .6; cursor: wait; }
+
+.divider { display: flex; align-items: center; gap: 14px; margin: 24px 0; color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(201,169,97,0.15); }
+
+.btn-google {
+  width: 100%; padding: 13px; border-radius: 12px; cursor: pointer;
+  background: rgba(245,243,240,0.04); border: 1px solid rgba(201,169,97,0.25);
+  color: var(--text); font-weight: 600; font-size: 14px; font-family: 'Inter', sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all .3s;
+}
+.btn-google:hover { border-color: var(--accent); background: rgba(201,169,97,0.08); }
+
+.alert {
+  display: none; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 18px;
+}
+.alert.show { display: block; }
+.alert.error { background: rgba(224,122,107,0.12); border: 1px solid rgba(224,122,107,0.35); color: var(--error); }
+.alert.success { background: rgba(123,201,163,0.12); border: 1px solid rgba(123,201,163,0.35); color: var(--success); }
+
+footer { padding: 28px 48px; border-top: 1px solid rgba(201,169,97,0.15); text-align: center; color: var(--text-dim); font-size: 12px; }
+
+@media (max-width: 600px) {
+  header { padding: 18px 24px; }
+  header nav a { margin-left: 16px; font-size: 12px; }
+  .card { padding: 28px 22px; }
+  .card h1 { font-size: 30px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="pricing.html">VICTOR IA</a>
+  <nav>
+    <a href="pricing.html">Precios</a>
+    <a href="dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<main class="auth-wrap">
+  <div class="card">
+    <h1>Bienvenido</h1>
+    <p class="sub">Accede a tu plataforma de automatización timeshare.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')" role="tab">Login</button>
+      <button class="tab" id="tab-signup" onclick="switchTab('signup')" role="tab">Crear cuenta</button>
+    </div>
+
+    <div class="alert" id="alert" role="alert"></div>
+
+    <!-- LOGIN -->
+    <form id="form-login" novalidate>
+      <div class="field" id="f-login-email">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="tu@empresa.com" autocomplete="email" required>
+        <div class="err">Ingresa un email válido.</div>
+      </div>
+      <div class="field" id="f-login-pass">
+        <label for="login-pass">Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" minlength="6" required>
+        <div class="err">Mínimo 6 caracteres.</div>
+      </div>
+      <div class="row-flex">
+        <label class="remember"><input type="checkbox" id="remember-me"> Recordarme</label>
+        <a href="#" class="forgot" onclick="forgotPassword(event)">¿Olvidaste tu password?</a>
+      </div>
+      <button type="submit" class="btn" id="btn-login">Iniciar sesión</button>
+      <div class="divider">o continúa con</div>
+      <button type="button" class="btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.2-8l-6.5 5C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+        Login con Google
+      </button>
+    </form>
+
+    <!-- SIGNUP -->
+    <form id="form-signup" novalidate style="display:none">
+      <div class="field" id="f-su-name">
+        <label for="su-name">Nombre</label>
+        <input type="text" id="su-name" placeholder="Tu nombre completo" autocomplete="name" minlength="2" required>
+        <div class="err">Ingresa tu nombre.</div>
+      </div>
+      <div class="field" id="f-su-email">
+        <label for="su-email">Email</label>
+        <input type="email" id="su-email" placeholder="tu@empresa.com" autocomplete="email" required>
+        <div class="err">Ingresa un email válido.</div>
+      </div>
+      <div class="field" id="f-su-company">
+        <label for="su-company">Empresa</label>
+        <input type="text" id="su-company" placeholder="Nombre de tu resort / empresa" minlength="2" required>
+        <div class="err">Ingresa el nombre de tu empresa.</div>
+      </div>
+      <div class="field" id="f-su-pass">
+        <label for="su-pass">Password</label>
+        <input type="password" id="su-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6" required>
+        <div class="err">Mínimo 6 caracteres.</div>
+      </div>
+      <div class="field">
+        <label for="su-plan">Plan</label>
+        <select id="su-plan">
+          <option value="freemium">Freemium — 24h gratis · 100 tokens</option>
+          <option value="teams">Teams — $499/mes + tokens</option>
+          <option value="enterprise">Enterprise — Custom pricing</option>
+        </select>
+      </div>
+      <button type="submit" class="btn" id="btn-signup">Crear cuenta</button>
+      <div class="divider">o continúa con</div>
+      <button type="button" class="btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.2-8l-6.5 5C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+        Registrarme con Google
+      </button>
+    </form>
+  </div>
+</main>
+
+<footer>© 2026 VICTOR IA. Plataforma SaaS de automatización timeshare.</footer>
+
+<script>
+/* ============================================================
+   MOCK BACKEND — intercepta fetch('/api/...') y simula respuestas
+   Endpoints: POST /api/auth/login · POST /api/auth/signup
+   Persistencia: localStorage (mock de base de datos)
+   ============================================================ */
+(function () {
+  const realFetch = window.fetch.bind(window);
+  const delay = (ms) => new Promise(r => setTimeout(r, ms));
+  const makeToken = () => 'vtk_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const db = {
+    getUsers() { try { return JSON.parse(localStorage.getItem('mock_users_db') || '{}'); } catch { return {}; } },
+    saveUsers(u) { localStorage.setItem('mock_users_db', JSON.stringify(u)); }
+  };
+
+  window.fetch = async function (url, opts = {}) {
+    if (typeof url !== 'string' || !url.startsWith('/api/')) return realFetch(url, opts);
+    await delay(600 + Math.random() * 500); // latencia simulada
+    const body = opts.body ? JSON.parse(opts.body) : {};
+    const json = (status, data) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
+
+    if (url === '/api/auth/login' && (opts.method || 'GET') === 'POST') {
+      const users = db.getUsers();
+      const user = users[body.email];
+      if (!user) {
+        // Mock permisivo: cualquier email válido entra como demo (backend real validaría)
+        return json(200, { ok: true, token: makeToken(), user: { email: body.email, name: body.email.split('@')[0], company: 'Demo Resort', plan: 'freemium' }, demo: true });
+      }
+      if (user.password !== body.password) return json(401, { ok: false, error: 'Password incorrecto.' });
+      return json(200, { ok: true, token: makeToken(), user });
+    }
+
+    if (url === '/api/auth/signup' && (opts.method || 'GET') === 'POST') {
+      const users = db.getUsers();
+      if (users[body.email]) return json(409, { ok: false, error: 'Ya existe una cuenta con ese email. Usa Login.' });
+      const user = { email: body.email, name: body.name, company: body.company, plan: body.plan, password: body.password, createdAt: new Date().toISOString() };
+      users[body.email] = user;
+      db.saveUsers(users);
+      return json(201, { ok: true, token: makeToken(), user });
+    }
+
+    return json(404, { ok: false, error: 'Endpoint no encontrado: ' + url });
+  };
+})();
+
+/* ============================================================
+   UI — tabs, validación, sesión
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+
+function switchTab(which) {
+  $('tab-login').classList.toggle('active', which === 'login');
+  $('tab-signup').classList.toggle('active', which === 'signup');
+  $('form-login').style.display = which === 'login' ? '' : 'none';
+  $('form-signup').style.display = which === 'signup' ? '' : 'none';
+  hideAlert();
+}
+
+function showAlert(msg, type) {
+  const a = $('alert');
+  a.textContent = msg;
+  a.className = 'alert show ' + type;
+}
+function hideAlert() { $('alert').className = 'alert'; }
+
+function validateField(fieldWrapId, inputEl, validFn) {
+  const ok = validFn(inputEl.value.trim());
+  $(fieldWrapId).classList.toggle('show-err', !ok);
+  inputEl.classList.toggle('invalid', !ok);
+  return ok;
+}
+const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+function saveSession({ token, user }, remember) {
+  // Claves requeridas por el sprint
+  localStorage.setItem('user_email', user.email);
+  localStorage.setItem('user_plan', user.plan || 'freemium');
+  localStorage.setItem('session_token', token);
+  localStorage.setItem('company_name', user.company || '');
+  localStorage.setItem('user_name', user.name || '');
+  localStorage.setItem('remember_me', remember ? '1' : '0');
+  localStorage.setItem('session_created_at', new Date().toISOString());
+}
+
+function redirectToDashboard(token) {
+  showAlert('Sesión iniciada. Redirigiendo al dashboard…', 'success');
+  setTimeout(() => { window.location.href = 'dashboard.html?session=' + encodeURIComponent(token); }, 900);
+}
+
+/* LOGIN */
+$('form-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+  const email = $('login-email'), pass = $('login-pass');
+  const v1 = validateField('f-login-email', email, isEmail);
+  const v2 = validateField('f-login-pass', pass, (v) => v.length >= 6);
+  if (!v1 || !v2) return;
+
+  const btn = $('btn-login');
+  btn.disabled = true; btn.textContent = 'Verificando…';
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value.trim(), password: pass.value })
+    });
+    const data = await res.json();
+    if (!data.ok) { showAlert(data.error || 'Error al iniciar sesión.', 'error'); return; }
+    saveSession(data, $('remember-me').checked);
+    redirectToDashboard(data.token);
+  } catch {
+    showAlert('Error de conexión. Intenta de nuevo.', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Iniciar sesión';
+  }
+});
+
+/* SIGNUP */
+$('form-signup').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+  const name = $('su-name'), email = $('su-email'), company = $('su-company'), pass = $('su-pass');
+  const valid = [
+    validateField('f-su-name', name, (v) => v.length >= 2),
+    validateField('f-su-email', email, isEmail),
+    validateField('f-su-company', company, (v) => v.length >= 2),
+    validateField('f-su-pass', pass, (v) => v.length >= 6)
+  ].every(Boolean);
+  if (!valid) return;
+
+  const btn = $('btn-signup');
+  btn.disabled = true; btn.textContent = 'Creando cuenta…';
+  try {
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name.value.trim(), email: email.value.trim(),
+        company: company.value.trim(), password: pass.value, plan: $('su-plan').value
+      })
+    });
+    const data = await res.json();
+    if (!data.ok) { showAlert(data.error || 'No se pudo crear la cuenta.', 'error'); return; }
+    saveSession(data, true);
+    redirectToDashboard(data.token);
+  } catch {
+    showAlert('Error de conexión. Intenta de nuevo.', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Crear cuenta';
+  }
+});
+
+/* OAUTH GOOGLE (mock) */
+async function loginGoogle() {
+  hideAlert();
+  showAlert('Conectando con Google…', 'success');
+  await new Promise(r => setTimeout(r, 900));
+  const mock = {
+    token: 'gtk_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
+    user: { email: 'demo.google@victor-ia.com', name: 'Usuario Google', company: 'Google OAuth Demo', plan: localStorage.getItem('selected_plan') || 'freemium' }
+  };
+  localStorage.setItem('oauth_provider', 'google');
+  saveSession(mock, true);
+  redirectToDashboard(mock.token);
+}
+
+/* FORGOT PASSWORD (mock redirect) */
+function forgotPassword(e) {
+  e.preventDefault();
+  const email = $('login-email').value.trim();
+  localStorage.setItem('password_reset_requested', JSON.stringify({ email: email || null, at: new Date().toISOString() }));
+  showAlert('Te enviamos un link de recuperación' + (email ? ' a ' + email : '') + '. (Mock: redirect simulado)', 'success');
+}
+
+/* Pre-selección de plan via ?plan=... (viene de pricing.html) */
+(function () {
+  const plan = new URLSearchParams(location.search).get('plan');
+  if (plan && ['freemium', 'teams', 'enterprise'].includes(plan)) {
+    localStorage.setItem('selected_plan', plan);
+    switchTab('signup');
+    $('su-plan').value = plan;
+  }
+  // Sesión existente → ir directo al dashboard
+  const tok = localStorage.getItem('session_token');
+  if (tok && localStorage.getItem('remember_me') === '1' && !plan) {
+    showAlert('Sesión activa detectada. Redirigiendo…', 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html?session=' + encodeURIComponent(tok); }, 1200);
+  }
+})();
+</script>
+</body>
+</html>

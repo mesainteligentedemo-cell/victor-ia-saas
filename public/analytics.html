@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VICTOR IA · Analytics — Tracker Integrado</title>
+<meta name="description" content="Analytics de productividad VICTOR IA — KPIs, timeline, heatmap, gastos vs ROI y tracker integrado.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070809">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Display:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:      #070809;
+  --bg-2:    #0B0C0E;
+  --panel:   #0E0F12;
+  --panel-2: #121317;
+  --ink:     #F8F7F5;
+  --ink-dim: rgba(248,247,245,0.62);
+  --ink-mute:rgba(248,247,245,0.38);
+  --border:  rgba(248,247,245,0.08);
+  --border-2:rgba(248,247,245,0.14);
+  --amber:   #FFAA17;
+  --amber-dim:rgba(255,170,23,0.14);
+  --border-accent: rgba(255,170,23,0.25);
+  --gold-grad: linear-gradient(130deg,#b87834 0%,#e8cc94 42%,#c9a870 68%,#b87834 100%);
+  --green:   #4ade80;
+  --blue:    #60a5fa;
+  --purple:  #c084fc;
+  --red:     #f87171;
+  --teal:    #2dd4bf;
+  --rose:    #fb7185;
+  --ease:    cubic-bezier(0.16,1,0.3,1);
+  --r:       14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(255,170,23,0.05), transparent 60%),
+    radial-gradient(700px 500px at -10% 110%, rgba(96,165,250,0.04), transparent 60%);
+}
+svg{display:block}
+button,input,select{font-family:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+input,select{
+  background:var(--bg-2);border:1px solid var(--border);border-radius:9px;
+  padding:9px 11px;font-size:13px;color:var(--ink);outline:none;width:100%;
+  transition:border-color .25s var(--ease), box-shadow .25s var(--ease);
+}
+input:focus,select:focus{border-color:var(--border-accent);box-shadow:0 0 0 3px rgba(255,170,23,0.08)}
+input::placeholder{color:var(--ink-mute)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23F8F7F5' stroke-opacity='.5' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:28px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(248,247,245,0.12);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(248,247,245,0.2)}
+
+/* ── LAYOUT ── */
+.app{position:relative;z-index:1;display:grid;grid-template-columns:330px 1fr;min-height:100vh}
+.tracker{
+  border-right:1px solid var(--border);background:var(--bg-2);
+  padding:26px 22px;display:flex;flex-direction:column;gap:22px;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.main{padding:26px 30px 60px;min-width:0}
+
+/* ── BRAND ── */
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{
+  width:38px;height:38px;border-radius:11px;flex:none;
+  background:var(--gold-grad);display:grid;place-items:center;
+  box-shadow:0 6px 18px rgba(184,120,52,0.35);
+}
+.brand-mark svg{width:20px;height:20px}
+.brand h1{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;letter-spacing:.02em}
+.brand p{font-size:11px;color:var(--ink-mute);letter-spacing:.14em;text-transform:uppercase}
+
+/* ── TRACKER FORM ── */
+.t-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.t-title{display:flex;align-items:center;gap:9px;margin-bottom:15px}
+.t-title svg{width:16px;height:16px;color:var(--amber)}
+.t-title h2{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.f-group{margin-bottom:12px}
+.f-group label{display:block;font-size:11px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.dur-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dur-row input{text-align:center;font-variant-numeric:tabular-nums}
+.dur-row .dur-cell{position:relative}
+.dur-row .dur-cell span{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font-size:10px;color:var(--ink-mute);pointer-events:none;letter-spacing:.05em;
+}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-log{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--gold-grad);color:#1A1206;border-radius:10px;
+  padding:12px;font-weight:700;font-size:13px;letter-spacing:.04em;
+  transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+  box-shadow:0 8px 22px rgba(184,120,52,0.25);margin-top:4px;
+}
+.btn-log:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(184,120,52,0.4)}
+.btn-log:active{transform:translateY(0)}
+.btn-log svg{width:15px;height:15px}
+.t-feedback{
+  font-size:11.5px;color:var(--green);text-align:center;margin-top:10px;
+  opacity:0;transition:opacity .4s var(--ease);min-height:16px;
+}
+.t-feedback.show{opacity:1}
+
+/* ── TODAY LIST ── */
+.today-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.today-head .t-title{margin-bottom:0}
+.today-count{
+  font-size:10.5px;color:var(--amber);background:var(--amber-dim);
+  border:1px solid var(--border-accent);border-radius:99px;padding:2px 9px;
+  font-weight:600;letter-spacing:.05em;
+}
+.today-list{display:flex;flex-direction:column;gap:8px}
+.today-empty{font-size:12px;color:var(--ink-mute);text-align:center;padding:18px 0;font-style:italic;font-family:'Cormorant Display',serif;font-size:15px}
+.entry{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--panel-2);border:1px solid var(--border);border-radius:11px;
+  padding:11px 12px;transition:border-color .25s var(--ease), opacity .3s var(--ease);
+  animation:slideIn .45s var(--ease);
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.entry:hover{border-color:var(--border-2)}
+.entry.seen{opacity:.45}
+.entry.seen .e-desc{text-decoration:line-through}
+.e-eye{
+  flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+  border:1px solid var(--border);color:var(--ink-mute);
+  transition:all .25s var(--ease);margin-top:1px;
+}
+.e-eye:hover{border-color:var(--border-accent);color:var(--amber)}
+.entry.seen .e-eye{background:var(--amber-dim);border-color:var(--border-accent);color:var(--amber)}
+.e-eye svg{width:13px;height:13px}
+.e-body{min-width:0;flex:1}
+.e-desc{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.e-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;font-size:10.5px;color:var(--ink-mute);font-variant-numeric:tabular-nums}
+.e-meta .dot-sep{width:3px;height:3px;border-radius:50%;background:var(--ink-mute);align-self:center}
+.e-cat{display:inline-flex;align-items:center;gap:5px}
+.e-cat i{width:7px;height:7px;border-radius:2px;display:inline-block}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.topbar-titles h2{
+  font-family:'Cormorant Display',serif;font-weight:400;font-size:34px;line-height:1.1;letter-spacing:.01em;
+}
+.topbar-titles h2 em{font-style:italic;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-titles p{color:var(--ink-mute);font-size:12.5px;margin-top:4px;letter-spacing:.04em}
+.btn-csv{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--border-accent);background:var(--amber-dim);color:var(--amber);
+  border-radius:10px;padding:10px 18px;font-size:12.5px;font-weight:600;letter-spacing:.05em;
+  transition:all .25s var(--ease);
+}
+.btn-csv:hover{background:rgba(255,170,23,0.22);transform:translateY(-1px)}
+.btn-csv svg{width:14px;height:14px}
+
+/* ── FILTERS ── */
+.filters{
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:13px 16px;margin-bottom:24px;
+}
+.filters .f-label{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-dim);letter-spacing:.1em;text-transform:uppercase;margin-right:4px}
+.filters .f-label svg{width:13px;height:13px;color:var(--amber)}
+.filters select,.filters input[type="date"]{width:auto;min-width:130px;padding:8px 11px;font-size:12.5px}
+.filters input[type="date"]{color-scheme:dark;min-width:140px}
+.seg{display:inline-flex;background:var(--bg-2);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px}
+.seg button{
+  padding:6px 13px;border-radius:7px;font-size:12px;color:var(--ink-dim);font-weight:500;
+  transition:all .25s var(--ease);letter-spacing:.02em;
+}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--amber-dim);color:var(--amber);font-weight:600}
+.f-spacer{flex:1}
+.f-reset{font-size:11.5px;color:var(--ink-mute);letter-spacing:.04em;padding:6px 8px;border-radius:7px;transition:color .25s var(--ease)}
+.f-reset:hover{color:var(--amber)}
+
+/* ── KPI GRID ── */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+.kpi{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 17px 16px;position:relative;overflow:hidden;
+  transition:transform .35s var(--ease), border-color .35s var(--ease);
+}
+.kpi:hover{transform:translateY(-3px);border-color:var(--border-2)}
+.kpi::after{
+  content:"";position:absolute;top:0;left:17px;right:17px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--kc,var(--amber)),transparent);opacity:.5;
+}
+.kpi-ico{
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;margin-bottom:13px;
+  background:color-mix(in srgb,var(--kc,var(--amber)) 12%,transparent);
+  color:var(--kc,var(--amber));
+}
+.kpi-ico svg{width:17px;height:17px}
+.kpi-label{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:5px}
+.kpi-value{
+  font-family:'Cormorant Display',serif;font-size:30px;font-weight:500;line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;
+}
+.kpi-value small{font-size:15px;color:var(--ink-dim);font-family:'Inter',sans-serif;font-weight:400;margin-left:2px}
+.kpi-delta{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:11px;font-variant-numeric:tabular-nums}
+.kpi-delta svg{width:11px;height:11px}
+.kpi-delta.up{color:var(--green)}
+.kpi-delta.down{color:var(--red)}
+.kpi-delta span.vs{color:var(--ink-mute)}
+
+/* ── CHART CARDS ── */
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;min-width:0;
+}
+.chart-card.wide{grid-column:1 / -1}
+.cc-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.cc-head h3{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.cc-head h3 svg{width:15px;height:15px;color:var(--amber)}
+.cc-head .cc-sub{font-size:11.5px;color:var(--ink-mute)}
+.chart-wrap{position:relative;height:280px}
+.chart-card.wide .chart-wrap{height:300px}
+
+/* ── HEATMAP ── */
+.hm-wrap{overflow-x:auto;padding-bottom:4px}
+.hm{display:grid;grid-template-columns:34px repeat(24,minmax(16px,1fr));gap:3px;min-width:560px}
+.hm-cell{
+  aspect-ratio:1/1;border-radius:4px;background:rgba(248,247,245,0.04);
+  position:relative;transition:transform .2s var(--ease);cursor:default;
+}
+.hm-cell:hover{transform:scale(1.25);z-index:2;outline:1px solid var(--border-accent)}
+.hm-lab{
+  font-size:9.5px;color:var(--ink-mute);display:flex;align-items:center;
+  letter-spacing:.08em;text-transform:uppercase;font-weight:500;
+}
+.hm-hour{font-size:8.5px;color:var(--ink-mute);text-align:center;align-self:end;padding-bottom:2px;font-variant-numeric:tabular-nums}
+.hm-legend{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:10px;color:var(--ink-mute);justify-content:flex-end}
+.hm-legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:50;
+  background:var(--panel-2);border:1px solid var(--border-accent);border-radius:12px;
+  padding:13px 18px;display:flex;align-items:center;gap:11px;font-size:13px;
+  box-shadow:0 18px 50px rgba(0,0,0,0.6);
+  transform:translateY(16px);opacity:0;pointer-events:none;
+  transition:all .4s var(--ease);
+}
+.toast.show{transform:none;opacity:1}
+.toast svg{width:16px;height:16px;color:var(--amber);flex:none}
+
+/* ── RESPONSIVE ── */
+@media (max-width:1380px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:1080px){
+  .app{grid-template-columns:1fr}
+  .tracker{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border)}
+  .charts{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .main{padding:20px 16px 50px}
+  .tracker{padding:20px 16px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
+  .kpi-value{font-size:25px}
+  .topbar-titles h2{font-size:27px}
+  .chart-wrap,.chart-card.wide .chart-wrap{height:240px}
+  .filters select,.filters input[type="date"]{min-width:0;flex:1}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SVG SPRITE — CUSTOM VI ICONS (cero emojis) ═══ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- VI monogram -->
+    <symbol id="i-vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 5l5 14 4-11"/><path d="M19 5v14"/>
+    </symbol>
+    <!-- Velocidad: speedometer -->
+    <symbol id="i-speed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 19a9 9 0 1 1 15 0"/><path d="M12 13l4-4.5"/><circle cx="12" cy="14" r="1.6" fill="currentColor" stroke="none"/>
+    </symbol>
+    <!-- ROI: trending arrow + base -->
+    <symbol id="i-roi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 17l5.5-5.5 3.5 3.5L20 7"/><path d="M15 7h5v5"/><path d="M3 21h18"/>
+    </symbol>
+    <!-- Tokens: hex stack -->
+    <symbol id="i-tokens" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2.5l6 3.4v4.2l-6 3.4-6-3.4V5.9z"/><path d="M6 13.9v4.2l6 3.4 6-3.4v-4.2"/><path d="M12 13.5v10"/>
+    </symbol>
+    <!-- Costo: coin / currency -->
+    <symbol id="i-cost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M15 9.2c-.6-1-1.7-1.5-3-1.5-1.8 0-3 1-3 2.2 0 3 6 1.6 6 4.4 0 1.3-1.3 2.2-3 2.2-1.4 0-2.5-.6-3-1.5"/><path d="M12 5.8v1.9M12 16.5v1.9"/>
+    </symbol>
+    <!-- Proyectos: layered folders -->
+    <symbol id="i-proj" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3.5 8.5V18a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2V9.8a2 2 0 0 0-2-2h-7l-2-2.3H5.5a2 2 0 0 0-2 2z"/><path d="M6.5 5.5V4.8a1.8 1.8 0 0 1 1.8-1.8h3.4l1.8 2"/>
+    </symbol>
+    <!-- Eficiencia: bolt in circle -->
+    <symbol id="i-eff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M13 7l-4.2 5.5h3.4L11 17l4.8-5.8h-3.4z"/>
+    </symbol>
+    <!-- Timeline -->
+    <symbol id="i-timeline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12h4l2.5-6 4 12 2.5-6h5"/>
+    </symbol>
+    <!-- Heatmap grid -->
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+      <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" fill="currentColor" stroke="none" opacity=".55"/>
+    </symbol>
+    <!-- Dual axis -->
+    <symbol id="i-dual" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/><path d="M4 7c4 0 5-3 9-3 3.5 0 4.5 2 8 2" opacity=".6"/>
+    </symbol>
+    <!-- Donut -->
+    <symbol id="i-donut" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 3.5v5.1M18.7 17l-4.2-2.9"/>
+    </symbol>
+    <!-- Clock / tracker -->
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/>
+    </symbol>
+    <!-- Plus -->
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <path d="M12 5v14M5 12h14"/>
+    </symbol>
+    <!-- Download -->
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 4v11M7.5 11l4.5 4.5L16.5 11"/><path d="M4 19.5h16"/>
+    </symbol>
+    <!-- Filter -->
+    <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 6h16M7 12h10M10 18h4"/>
+    </symbol>
+    <!-- Eye / visto -->
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>
+    </symbol>
+    <!-- Eye off / no visto -->
+    <symbol id="i-eyeoff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 4l16 16"/><path d="M9.9 5.9A9.4 9.4 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3.2 3.9M6.1 8A16.6 16.6 0 0 0 2.5 12S6 18.5 12 18.5c1.2 0 2.3-.25 3.3-.65"/><path d="M9.5 9.8a2.9 2.9 0 0 0 4 4.1"/>
+    </symbol>
+    <!-- Check -->
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 12.5l5 5L19.5 7"/>
+    </symbol>
+    <!-- Arrow up / down (deltas) -->
+    <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5M6 11l6-6 6 6"/>
+    </symbol>
+    <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14M6 13l6 6 6-6"/>
+    </symbol>
+    <!-- Calendar -->
+    <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 10h17M8 2.8V7M16 2.8V7"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- ═══════════ TRACKER (lado izquierdo) ═══════════ -->
+  <aside class="tracker">
+    <div class="brand">
+      <div class="brand-mark"><svg style="color:#1A1206"><use href="#i-vi"/></svg></div>
+      <div>
+        <h1>VICTOR IA</h1>
+        <p>Analytics · Tracker</p>
+      </div>
+    </div>
+
+    <!-- Formulario rápido -->
+    <div class="t-card">
+      <div class="t-title"><svg><use href="#i-clock"/></svg><h2>Log rápido</h2></div>
+      <form id="trackForm" autocomplete="off">
+        <div class="f-group">
+          <label for="fDesc">Descripción</label>
+          <input id="fDesc" type="text" placeholder="¿Qué hiciste?" required maxlength="120">
+        </div>
+        <div class="f-group">
+          <label>Duración</label>
+          <div class="dur-row">
+            <div class="dur-cell"><input id="fH" type="number" min="0" max="23" placeholder="0"><span>H</span></div>
+            <div class="dur-cell"><input id="fM" type="number" min="0" max="59" placeholder="0"><span>M</span></div>
+            <div class="dur-cell"><input id="fS" type="number" min="0" max="59" placeholder="0"><span>S</span></div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="f-group">
+            <label for="fCat">Categoría</label>
+            <select id="fCat"></select>
+          </div>
+          <div class="f-group">
+            <label for="fProj">Proyecto</label>
+            <select id="fProj"></select>
+          </div>
+        </div>
+        <div class="f-group">
+          <label for="fCost">Costo estimado (USD)</label>
+          <input id="fCost" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <button class="btn-log" type="submit"><svg><use href="#i-plus"/></svg>Registrar actividad</button>
+        <div class="t-feedback" id="tFeedback">Actividad guardada en el tracker</div>
+      </form>
+    </div>
+
+    <!-- Lista de hoy -->
+    <div class="t-card" style="flex:1">
+      <div class="today-head">
+        <div class="t-title"><svg><use href="#i-cal"/></svg><h2>Hoy</h2></div>
+        <span class="today-count" id="todayCount">0 / 0 vistas</span>
+      </div>
+      <div class="today-list" id="todayList"></div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN — ANALYTICS ═══════════ -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-titles">
+        <h2>Analytics de <em>productividad</em></h2>
+        <p id="rangeLabel">Últimos 30 días · todas las categorías</p>
+      </div>
+      <button class="btn-csv" id="btnCsv"><svg><use href="#i-download"/></svg>Exportar CSV</button>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filters">
+      <span class="f-label"><svg><use href="#i-filter"/></svg>Filtros</span>
+      <div class="seg" id="periodSeg">
+        <button data-p="today">Hoy</button>
+        <button data-p="7">7 días</button>
+        <button data-p="30" class="on">30 días</button>
+        <button data-p="90">90 días</button>
+      </div>
+      <input type="date" id="dateFrom" title="Desde">
+      <input type="date" id="dateTo" title="Hasta">
+      <select id="filtProj"><option value="">Todos los proyectos</option></select>
+      <select id="filtCat"><option value="">Todas las categorías</option></select>
+      <div class="f-spacer"></div>
+      <button class="f-reset" id="btnReset">Limpiar filtros</button>
+    </div>
+
+    <!-- KPI CARDS -->
+    <section class="kpis" id="kpiGrid">
+      <div class="kpi" style="--kc:#FFAA17">
+        <div class="kpi-ico"><svg><use href="#i-speed"/></svg></div>
+        <div class="kpi-label">Velocidad</div>
+        <div class="kpi-value" id="kVel">—</div>
+        <div class="kpi-delta" id="kVelD"></div>
+      </div>
+      <div class="kpi" style="--kc:#4ade80">
+        <div class="kpi-ico"><svg><use href="#i-roi"/></svg></div>
+        <div class="kpi-label">ROI</div>
+        <div class="kpi-value" id="kRoi">—</div>
+        <div class="kpi-delta" id="kRoiD"></div>
+      </div>
+      <div class="kpi" style="--kc:#c084fc">
+        <div class="kpi-ico"><svg><use href="#i-tokens"/></svg></div>
+        <div class="kpi-label">Tokens</div>
+        <div class="kpi-value" id="kTok">—</div>
+        <div class="kpi-delta" id="kTokD"></div>
+      </div>
+      <div class="kpi" style="--kc:#f87171">
+        <div class="kpi-ico"><svg><use href="#i-cost"/></svg></div>
+        <div class="kpi-label">Costo</div>
+        <div class="kpi-value" id="kCost">—</div>
+        <div class="kpi-delta" id="kCostD"></div>
+      </div>
+      <div class="kpi" style="--kc:#60a5fa">
+        <div class="kpi-ico"><svg><use href="#i-proj"/></svg></div>
+        <div class="kpi-label">Proyectos</div>
+        <div class="kpi-value" id="kProj">—</div>
+        <div class="kpi-delta" id="kProjD"></div>
+      </div>
+      <div class="kpi" style="--kc:#2dd4bf">
+        <div class="kpi-ico"><svg><use href="#i-eff"/></svg></div>
+        <div class="kpi-label">Eficiencia</div>
+        <div class="kpi-value" id="kEff">—</div>
+        <div class="kpi-delta" id="kEffD"></div>
+      </div>
+    </section>
+
+    <!-- CHARTS -->
+    <section class="charts">
+
+      <!-- 1. Timeline -->
+      <div class="chart-card wide">
+        <div class="cc-head">
+          <h3><svg><use href="#i-timeline"/></svg>Timeline de actividad</h3>
+          <div class="seg" id="tlSeg">
+            <button data-g="hour">Hora</button>
+            <button data-g="day" class="on">Día</button>
+            <button data-g="month">Mes</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chTimeline"></canvas></div>
+      </div>
+
+      <!-- 2. Heatmap -->
+      <div class="chart-card wide">
+        <div class="cc-head">
+          <h3><svg><use href="#i-grid"/></svg>Heatmap de productividad</h3>
+          <span class="cc-sub">7 días × 24 horas · minutos registrados</span>
+        </div>
+        <div class="hm-wrap"><div class="hm" id="heatmap"></div></div>
+        <div class="hm-legend" id="hmLegend">
+          <span>Menos</span>
+          <i style="background:rgba(248,247,245,0.05)"></i>
+          <i style="background:rgba(255,170,23,0.22)"></i>
+          <i style="background:rgba(255,170,23,0.45)"></i>
+          <i style="background:rgba(255,170,23,0.7)"></i>
+          <i style="background:#FFAA17"></i>
+          <span>Más</span>
+        </div>
+      </div>
+
+      <!-- 3. Gastos vs ROI -->
+      <div class="chart-card">
+        <div class="cc-head">
+          <h3><svg><use href="#i-dual"/></svg>Gastos vs ROI</h3>
+          <span class="cc-sub">USD · doble eje</span>
+        </div>
+        <div class="chart-wrap"><canvas id="chDual"></canvas></div>
+      </div>
+
+      <!-- 4. Donut categorías -->
+      <div class="chart-card">
+        <div class="cc-head">
+          <h3><svg><use href="#i-donut"/></svg>Distribución por categoría</h3>
+          <span class="cc-sub">horas registradas</span>
+        </div>
+        <div class="chart-wrap"><canvas id="chDonut"></canvas></div>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"><svg><use href="#i-check"/></svg><span id="toastMsg"></span></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   VICTOR IA — ANALYTICS + TRACKER · Sprint 3
+   localStorage · Chart.js · zero deps extra
+   ═══════════════════════════════════════════════════════════ */
+'use strict';
+
+const LS_KEY = 'vi_analytics_entries_v1';
+
+const CATEGORIES = [
+  {id:'desarrollo',   name:'Desarrollo',    color:'#FFAA17', rate:85},
+  {id:'diseno',       name:'Diseño',        color:'#c084fc', rate:75},
+  {id:'video',        name:'Video',         color:'#60a5fa', rate:70},
+  {id:'automatizacion',name:'Automatización',color:'#4ade80', rate:90},
+  {id:'estrategia',   name:'Estrategia',    color:'#2dd4bf', rate:110},
+  {id:'contenido',    name:'Contenido',     color:'#fb7185', rate:55},
+];
+const PROJECTS = ['Victor IA','Costa Negra','Seabird Hotel','ROES & CO','Influence IA','LATIVA'];
+const DAY_NAMES = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const catById = id => CATEGORIES.find(c=>c.id===id) || CATEGORIES[0];
+
+/* ── STATE ── */
+let entries = [];
+let filters = { period:'30', from:null, to:null, proj:'', cat:'' };
+let tlGranularity = 'day';
+let charts = { timeline:null, dual:null, donut:null };
+
+/* ═══ SEED DATA ═══ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function seedData(){
+  const rnd = mulberry32(20260610);
+  const out = [];
+  const descs = {
+    desarrollo:['Refactor componente KPI','API gateway endpoints','Fix responsive dashboard','Integración Firestore','Tests unitarios tracker','Optimización bundle','Hook de localStorage','Migración Chart.js'],
+    diseno:['Iteración hero landing','Sistema de iconos SVG','Mockup dashboard dark','Paleta cliente nuevo','Microinteracciones cards','Grid editorial propuesta'],
+    video:['Edición spot 30s','Render escenas Kling','Sync VO ElevenLabs','Color grade timeline','Storyboard comercial','Export master 4K'],
+    automatizacion:['Workflow n8n leads','Script export CSV','Cron de backups','Webhook HubSpot','Pipeline imágenes CDN','Bot de reportes'],
+    estrategia:['Propuesta comercial','Análisis competencia','Roadmap trimestre','Pricing tiers SaaS','Auditoría UX cliente','Plan de sprints'],
+    contenido:['Copy landing page','Guion video demo','Posts redes semana','Newsletter mensual','Documentación módulo','Caso de estudio'],
+  };
+  const now = new Date();
+  for(let d=89; d>=0; d--){
+    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate()-d);
+    const dow = (day.getDay()+6)%7;                       // 0=Lun
+    const isWeekend = dow>=5;
+    const nTasks = isWeekend ? Math.floor(rnd()*3) : 2+Math.floor(rnd()*5);
+    for(let i=0;i<nTasks;i++){
+      const cat = CATEGORIES[Math.floor(rnd()*CATEGORIES.length)];
+      const proj = PROJECTS[Math.floor(rnd()*PROJECTS.length)];
+      // horario sesgado a horas laborales (9–19) con cola nocturna
+      let hour;
+      const r = rnd();
+      if(r<0.72) hour = 9+Math.floor(rnd()*10);
+      else if(r<0.9) hour = 20+Math.floor(rnd()*4);
+      else hour = 6+Math.floor(rnd()*3);
+      if(d===0){ // hoy: solo horas ya transcurridas para que la lista no quede vacía
+        const maxH = Math.max(0, now.getHours());
+        hour = Math.max(0, maxH - Math.floor(rnd()*Math.min(8,maxH+1)));
+      }
+      const min = Math.floor(rnd()*60);
+      const ts = new Date(day.getFullYear(),day.getMonth(),day.getDate(),hour,min,Math.floor(rnd()*60));
+      if(ts > now) continue;
+      const durS = 900 + Math.floor(rnd()*9000);          // 15 min – 2.75 h
+      const tokens = 4000 + Math.floor(rnd()*92000);
+      const cost = +( (durS/3600)*(11+rnd()*24) + tokens*0.000011 ).toFixed(2);
+      const list = descs[cat.id];
+      out.push({
+        id:'sd-'+d+'-'+i,
+        ts:ts.toISOString(),
+        desc:list[Math.floor(rnd()*list.length)],
+        durS, cat:cat.id, proj, cost, tokens,
+        seen: d===0 ? rnd()<0.45 : true,
+      });
+    }
+  }
+  return out;
+}
+
+/* ═══ PERSISTENCE ═══ */
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){ entries = JSON.parse(raw); if(Array.isArray(entries) && entries.length) return; }
+  }catch(e){}
+  entries = seedData();
+  save();
+}
+function save(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(entries)); }catch(e){}
+}
+
+/* ═══ HELPERS ═══ */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const fmtInt = n => n.toLocaleString('es-MX');
+const fmtMoney = n => '$'+n.toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmtTokens = n => n>=1e6 ? (n/1e6).toFixed(2)+'M' : n>=1e3 ? (n/1e3).toFixed(1)+'K' : String(n);
+const pad2 = n => String(n).padStart(2,'0');
+const fmtDur = s => `${pad2(Math.floor(s/3600))}:${pad2(Math.floor(s%3600/60))}:${pad2(s%60)}`;
+const dayKey = d => d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const startOfDay = d => new Date(d.getFullYear(),d.getMonth(),d.getDate());
+const entryValue = e => (e.durS/3600) * catById(e.cat).rate;   // valor generado estimado
+
+/* ═══ RANGE / FILTERS ═══ */
+function currentRange(){
+  const now = new Date();
+  let from, to = new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59);
+  if(filters.from && filters.to){
+    from = startOfDay(new Date(filters.from+'T00:00:00'));
+    to   = new Date(filters.to+'T23:59:59');
+  }else if(filters.period==='today'){
+    from = startOfDay(now);
+  }else{
+    const days = parseInt(filters.period,10)||30;
+    from = startOfDay(new Date(now.getFullYear(),now.getMonth(),now.getDate()-(days-1)));
+  }
+  return {from,to};
+}
+function prevRange(r){
+  const span = r.to - r.from;
+  return { from:new Date(r.from-span-1), to:new Date(r.from-1) };
+}
+function inRange(e,r){ const t=new Date(e.ts); return t>=r.from && t<=r.to; }
+function applyDimFilters(list){
+  return list.filter(e =>
+    (!filters.proj || e.proj===filters.proj) &&
+    (!filters.cat  || e.cat===filters.cat)
+  );
+}
+function filtered(){ return applyDimFilters(entries.filter(e=>inRange(e,currentRange()))); }
+
+/* ═══ KPIs ═══ */
+function computeKPIs(list, range){
+  const totalS   = list.reduce((a,e)=>a+e.durS,0);
+  const cost     = list.reduce((a,e)=>a+e.cost,0);
+  const tokens   = list.reduce((a,e)=>a+e.tokens,0);
+  const value    = list.reduce((a,e)=>a+entryValue(e),0);
+  const days     = Math.max(1, Math.round((range.to-range.from)/86400000));
+  const activeDays = new Set(list.map(e=>dayKey(new Date(e.ts)))).size || 1;
+  return {
+    vel:  list.length/activeDays,                              // tareas por día activo
+    roi:  cost>0 ? ((value-cost)/cost)*100 : 0,
+    tokens, cost,
+    proj: new Set(list.map(e=>e.proj)).size,
+    eff:  Math.min(100,(totalS/3600)/(days*8)*100*(activeDays/days>0.5?1:1.15)),
+    totalS,
+  };
+}
+function setDelta(el, cur, prev, invert){
+  if(prev===0 && cur===0){ el.innerHTML=''; return; }
+  const diff = prev===0 ? 100 : ((cur-prev)/Math.abs(prev))*100;
+  const up = diff>=0;
+  const good = invert ? !up : up;
+  el.className = 'kpi-delta '+(good?'up':'down');
+  el.innerHTML = `<svg><use href="#i-${up?'up':'down'}"/></svg>${Math.abs(diff).toFixed(1)}% <span class="vs">vs período anterior</span>`;
+}
+function renderKPIs(){
+  const r = currentRange();
+  const cur  = computeKPIs(filtered(), r);
+  const pr   = prevRange(r);
+  const prev = computeKPIs(applyDimFilters(entries.filter(e=>inRange(e,pr))), pr);
+
+  $('#kVel').innerHTML  = cur.vel.toFixed(1)+'<small>tareas/día</small>';
+  $('#kRoi').innerHTML  = cur.roi.toFixed(0)+'<small>%</small>';
+  $('#kTok').textContent  = fmtTokens(cur.tokens);
+  $('#kCost').textContent = fmtMoney(cur.cost);
+  $('#kProj').innerHTML = cur.proj+'<small>activos</small>';
+  $('#kEff').innerHTML  = cur.eff.toFixed(0)+'<small>%</small>';
+
+  setDelta($('#kVelD'),  cur.vel,    prev.vel);
+  setDelta($('#kRoiD'),  cur.roi,    prev.roi);
+  setDelta($('#kTokD'),  cur.tokens, prev.tokens);
+  setDelta($('#kCostD'), cur.cost,   prev.cost, true);
+  setDelta($('#kProjD'), cur.proj,   prev.proj);
+  setDelta($('#kEffD'),  cur.eff,    prev.eff);
+}
+
+/* ═══ CHART.JS THEME ═══ */
+Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = 'rgba(248,247,245,0.45)';
+Chart.defaults.borderColor = 'rgba(248,247,245,0.07)';
+const tooltipBase = {
+  backgroundColor:'#121317', borderColor:'rgba(255,170,23,0.25)', borderWidth:1,
+  titleColor:'#F8F7F5', bodyColor:'rgba(248,247,245,0.75)',
+  padding:11, cornerRadius:9, displayColors:true, boxPadding:4,
+  titleFont:{family:"'Space Grotesk',sans-serif",weight:'600'},
+};
+
+/* ═══ 1. TIMELINE ═══ */
+function timelineData(){
+  const list = filtered();
+  const r = currentRange();
+  const labels=[], hours=[], tasks=[];
+  if(tlGranularity==='hour'){
+    const byH = Array.from({length:24},()=>({h:0,n:0}));
+    list.forEach(e=>{ const h=new Date(e.ts).getHours(); byH[h].h+=e.durS/3600; byH[h].n++; });
+    for(let h=0;h<24;h++){ labels.push(pad2(h)+':00'); hours.push(+byH[h].h.toFixed(2)); tasks.push(byH[h].n); }
+  }else if(tlGranularity==='month'){
+    const map = new Map();
+    list.forEach(e=>{
+      const d=new Date(e.ts); const k=d.getFullYear()+'-'+pad2(d.getMonth()+1);
+      if(!map.has(k)) map.set(k,{h:0,n:0});
+      const o=map.get(k); o.h+=e.durS/3600; o.n++;
+    });
+    [...map.keys()].sort().forEach(k=>{
+      const [y,m]=k.split('-');
+      labels.push(new Date(+y,+m-1,1).toLocaleDateString('es-MX',{month:'short',year:'2-digit'}));
+      hours.push(+map.get(k).h.toFixed(2)); tasks.push(map.get(k).n);
+    });
+  }else{
+    const map = new Map();
+    list.forEach(e=>{
+      const k=dayKey(new Date(e.ts));
+      if(!map.has(k)) map.set(k,{h:0,n:0});
+      const o=map.get(k); o.h+=e.durS/3600; o.n++;
+    });
+    const cur = new Date(r.from);
+    while(cur<=r.to){
+      const k=dayKey(cur);
+      labels.push(cur.toLocaleDateString('es-MX',{day:'2-digit',month:'short'}));
+      const o=map.get(k)||{h:0,n:0};
+      hours.push(+o.h.toFixed(2)); tasks.push(o.n);
+      cur.setDate(cur.getDate()+1);
+    }
+  }
+  return {labels,hours,tasks};
+}
+function renderTimeline(){
+  const d = timelineData();
+  if(charts.timeline){
+    charts.timeline.data.labels = d.labels;
+    charts.timeline.data.datasets[0].data = d.hours;
+    charts.timeline.data.datasets[1].data = d.tasks;
+    charts.timeline.update();
+    return;
+  }
+  const ctx = $('#chTimeline').getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,300);
+  grad.addColorStop(0,'rgba(255,170,23,0.28)');
+  grad.addColorStop(1,'rgba(255,170,23,0)');
+  charts.timeline = new Chart(ctx,{
+    type:'line',
+    data:{labels:d.labels,datasets:[
+      {label:'Horas',data:d.hours,borderColor:'#FFAA17',backgroundColor:grad,fill:true,
+       tension:0.38,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:'#FFAA17',borderWidth:2,yAxisID:'y'},
+      {label:'Tareas',data:d.tasks,borderColor:'rgba(96,165,250,0.85)',borderDash:[5,4],
+       tension:0.38,pointRadius:0,pointHoverRadius:5,borderWidth:1.6,fill:false,yAxisID:'y1'},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{usePointStyle:true,pointStyle:'line',boxWidth:24,padding:18}},
+        tooltip:{...tooltipBase,callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y}${c.datasetIndex===0?' h':''}`}},
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{maxTicksLimit:14,maxRotation:0}},
+        y:{beginAtZero:true,title:{display:true,text:'Horas',color:'rgba(248,247,245,0.35)'},grid:{color:'rgba(248,247,245,0.05)'}},
+        y1:{beginAtZero:true,position:'right',title:{display:true,text:'Tareas',color:'rgba(248,247,245,0.35)'},grid:{drawOnChartArea:false}},
+      },
+    },
+  });
+}
+
+/* ═══ 2. HEATMAP 7×24 ═══ */
+function renderHeatmap(){
+  const list = filtered();
+  const grid = Array.from({length:7},()=>new Array(24).fill(0));
+  list.forEach(e=>{
+    const d=new Date(e.ts);
+    grid[(d.getDay()+6)%7][d.getHours()] += e.durS/60;       // minutos
+  });
+  const max = Math.max(1,...grid.flat());
+  const hm = $('#heatmap');
+  let html = '<div class="hm-lab"></div>';
+  for(let h=0;h<24;h++) html += `<div class="hm-hour">${h%3===0?pad2(h):''}</div>`;
+  for(let d=0;d<7;d++){
+    html += `<div class="hm-lab">${DAY_NAMES[d]}</div>`;
+    for(let h=0;h<24;h++){
+      const v = grid[d][h];
+      const pct = v/max;
+      let bg;
+      if(v===0)        bg='rgba(248,247,245,0.04)';
+      else if(pct<.25) bg='rgba(255,170,23,0.22)';
+      else if(pct<.5)  bg='rgba(255,170,23,0.45)';
+      else if(pct<.78) bg='rgba(255,170,23,0.7)';
+      else             bg='#FFAA17';
+      html += `<div class="hm-cell" style="background:${bg}" title="${DAY_NAMES[d]} ${pad2(h)}:00 — ${Math.round(v)} min"></div>`;
+    }
+  }
+  hm.innerHTML = html;
+}
+
+/* ═══ 3. GASTOS vs ROI (dual axis) ═══ */
+function dualData(){
+  const list = filtered();
+  const r = currentRange();
+  const spanDays = Math.max(1,Math.round((r.to-r.from)/86400000));
+  const useMonths = spanDays>62;
+  const map = new Map();
+  list.forEach(e=>{
+    const d=new Date(e.ts);
+    const k = useMonths ? d.getFullYear()+'-'+pad2(d.getMonth()+1)
+            : spanDays<=1 ? pad2(d.getHours())+':00'
+            : dayKey(d);
+    if(!map.has(k)) map.set(k,{cost:0,value:0});
+    const o=map.get(k); o.cost+=e.cost; o.value+=entryValue(e);
+  });
+  const keys=[...map.keys()].sort();
+  const labels = keys.map(k=>{
+    if(spanDays<=1) return k;
+    if(useMonths){const[y,m]=k.split('-');return new Date(+y,+m-1,1).toLocaleDateString('es-MX',{month:'short',year:'2-digit'})}
+    const[y,m,dd]=k.split('-');return new Date(+y,+m-1,+dd).toLocaleDateString('es-MX',{day:'2-digit',month:'short'});
+  });
+  return {
+    labels,
+    cost: keys.map(k=>+map.get(k).cost.toFixed(2)),
+    roi:  keys.map(k=>{const o=map.get(k);return o.cost>0?+(((o.value-o.cost)/o.cost)*100).toFixed(1):0}),
+  };
+}
+function renderDual(){
+  const d = dualData();
+  if(charts.dual){
+    charts.dual.data.labels=d.labels;
+    charts.dual.data.datasets[0].data=d.cost;
+    charts.dual.data.datasets[1].data=d.roi;
+    charts.dual.update();
+    return;
+  }
+  charts.dual = new Chart($('#chDual'),{
+    data:{labels:d.labels,datasets:[
+      {type:'bar',label:'Gasto (USD)',data:d.cost,backgroundColor:'rgba(248,113,113,0.45)',
+       hoverBackgroundColor:'rgba(248,113,113,0.75)',borderRadius:5,borderSkipped:false,maxBarThickness:22,yAxisID:'y'},
+      {type:'line',label:'ROI (%)',data:d.roi,borderColor:'#4ade80',backgroundColor:'#4ade80',
+       tension:0.35,pointRadius:0,pointHoverRadius:5,borderWidth:2,yAxisID:'y1'},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{usePointStyle:true,pointStyle:'rectRounded',boxWidth:12,padding:18}},
+        tooltip:{...tooltipBase,callbacks:{label:c=>` ${c.dataset.label}: ${c.datasetIndex===0?'$'+c.parsed.y:c.parsed.y+'%'}`}},
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{maxTicksLimit:10,maxRotation:0}},
+        y:{beginAtZero:true,title:{display:true,text:'USD',color:'rgba(248,247,245,0.35)'},grid:{color:'rgba(248,247,245,0.05)'},ticks:{callback:v=>'$'+v}},
+        y1:{position:'right',title:{display:true,text:'ROI %',color:'rgba(248,247,245,0.35)'},grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}},
+      },
+    },
+  });
+}
+
+/* ═══ 4. DONUT CATEGORÍAS ═══ */
+function renderDonut(){
+  const list = filtered();
+  const byCat = CATEGORIES.map(c=>({
+    name:c.name,color:c.color,
+    h:+(list.filter(e=>e.cat===c.id).reduce((a,e)=>a+e.durS,0)/3600).toFixed(1),
+  })).filter(c=>c.h>0);
+  const data = {
+    labels:byCat.map(c=>c.name),
+    datasets:[{
+      data:byCat.map(c=>c.h),
+      backgroundColor:byCat.map(c=>c.color),
+      borderColor:'#0E0F12',borderWidth:3,hoverOffset:8,
+    }],
+  };
+  if(charts.donut){ charts.donut.data=data; charts.donut.update(); return; }
+  charts.donut = new Chart($('#chDonut'),{
+    type:'doughnut',data,
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'66%',
+      plugins:{
+        legend:{position:'right',labels:{usePointStyle:true,pointStyle:'rectRounded',boxWidth:11,padding:13}},
+        tooltip:{...tooltipBase,callbacks:{label:c=>{
+          const total=c.dataset.data.reduce((a,b)=>a+b,0);
+          return ` ${c.label}: ${c.parsed} h (${(c.parsed/total*100).toFixed(1)}%)`;
+        }}},
+      },
+    },
+  });
+}
+
+/* ═══ TRACKER — TODAY LIST ═══ */
+function renderToday(){
+  const today = dayKey(new Date());
+  const list = entries
+    .filter(e=>dayKey(new Date(e.ts))===today)
+    .sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const seen = list.filter(e=>e.seen).length;
+  $('#todayCount').textContent = `${seen} / ${list.length} vistas`;
+  const wrap = $('#todayList');
+  if(!list.length){
+    wrap.innerHTML = '<div class="today-empty">Aún no hay actividad registrada hoy</div>';
+    return;
+  }
+  wrap.innerHTML = list.map(e=>{
+    const c = catById(e.cat);
+    const t = new Date(e.ts);
+    return `<div class="entry${e.seen?' seen':''}" data-id="${e.id}">
+      <button class="e-eye" title="${e.seen?'Marcar como no vista':'Marcar como vista'}" aria-label="Alternar visto">
+        <svg><use href="#i-${e.seen?'eye':'eyeoff'}"/></svg>
+      </button>
+      <div class="e-body">
+        <div class="e-desc">${escHtml(e.desc)}</div>
+        <div class="e-meta">
+          <span>${pad2(t.getHours())}:${pad2(t.getMinutes())}</span><span class="dot-sep"></span>
+          <span>${fmtDur(e.durS)}</span><span class="dot-sep"></span>
+          <span class="e-cat"><i style="background:${c.color}"></i>${c.name}</span><span class="dot-sep"></span>
+          <span>${escHtml(e.proj)}</span><span class="dot-sep"></span>
+          <span>$${e.cost.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function escHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+/* ═══ CSV EXPORT ═══ */
+function exportCsv(){
+  const list = filtered().sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+  const head = ['fecha','hora','descripcion','duracion_hms','duracion_seg','categoria','proyecto','costo_usd','tokens','valor_estimado_usd','visto'];
+  const rows = list.map(e=>{
+    const d=new Date(e.ts);
+    const cell = v => `"${String(v).replace(/"/g,'""')}"`;
+    return [
+      dayKey(d), pad2(d.getHours())+':'+pad2(d.getMinutes()),
+      cell(e.desc), fmtDur(e.durS), e.durS,
+      catById(e.cat).name, cell(e.proj),
+      e.cost.toFixed(2), e.tokens, entryValue(e).toFixed(2),
+      e.seen?'si':'no',
+    ].join(',');
+  });
+  const csv = '﻿'+head.join(',')+'\n'+rows.join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `victor-ia-analytics_${dayKey(new Date())}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+  toast(`CSV exportado — ${list.length} registros`);
+}
+
+/* ═══ TOAST ═══ */
+let toastTimer;
+function toast(msg){
+  $('#toastMsg').textContent = msg;
+  $('#toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>$('#toast').classList.remove('show'),2600);
+}
+
+/* ═══ RANGE LABEL ═══ */
+function renderRangeLabel(){
+  const r = currentRange();
+  const f = d=>d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});
+  const parts = [ filters.from&&filters.to ? `${f(r.from)} — ${f(r.to)}`
+    : filters.period==='today' ? 'Hoy' : `Últimos ${filters.period} días` ];
+  parts.push(filters.proj || 'todos los proyectos');
+  parts.push(filters.cat ? catById(filters.cat).name : 'todas las categorías');
+  $('#rangeLabel').textContent = parts.join(' · ');
+}
+
+/* ═══ MASTER RENDER ═══ */
+function renderAll(){
+  renderKPIs();
+  renderTimeline();
+  renderHeatmap();
+  renderDual();
+  renderDonut();
+  renderToday();
+  renderRangeLabel();
+}
+
+/* ═══ INIT ═══ */
+function populateSelects(){
+  const catOpts = CATEGORIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  const projOpts = PROJECTS.map(p=>`<option>${p}</option>`).join('');
+  $('#fCat').innerHTML = catOpts;
+  $('#fProj').innerHTML = projOpts;
+  $('#filtCat').insertAdjacentHTML('beforeend',catOpts);
+  $('#filtProj').insertAdjacentHTML('beforeend',projOpts);
+}
+
+function bindEvents(){
+  /* — tracker form — */
+  $('#trackForm').addEventListener('submit',ev=>{
+    ev.preventDefault();
+    const h=+($('#fH').value||0), m=+($('#fM').value||0), s=+($('#fS').value||0);
+    const durS = h*3600+m*60+s;
+    if(!$('#fDesc').value.trim()) return;
+    if(durS<=0){ toast('Indica una duración mayor a 0'); return; }
+    entries.push({
+      id:'u-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+      ts:new Date().toISOString(),
+      desc:$('#fDesc').value.trim(),
+      durS,
+      cat:$('#fCat').value,
+      proj:$('#fProj').value,
+      cost:+($('#fCost').value||0),
+      tokens:0,
+      seen:false,
+    });
+    save();
+    ev.target.reset();
+    const fb=$('#tFeedback'); fb.classList.add('show');
+    setTimeout(()=>fb.classList.remove('show'),2200);
+    renderAll();
+  });
+
+  /* — today list: toggle visto — */
+  $('#todayList').addEventListener('click',ev=>{
+    const btn = ev.target.closest('.e-eye'); if(!btn) return;
+    const id = btn.closest('.entry').dataset.id;
+    const e = entries.find(x=>x.id===id); if(!e) return;
+    e.seen = !e.seen; save(); renderToday();
+  });
+
+  /* — period segments — */
+  $('#periodSeg').addEventListener('click',ev=>{
+    const b=ev.target.closest('button'); if(!b) return;
+    $$('#periodSeg button').forEach(x=>x.classList.toggle('on',x===b));
+    filters.period=b.dataset.p; filters.from=filters.to=null;
+    $('#dateFrom').value=''; $('#dateTo').value='';
+    renderAll();
+  });
+
+  /* — custom dates — */
+  const onDate=()=>{
+    const f=$('#dateFrom').value, t=$('#dateTo').value;
+    if(f&&t){
+      filters.from=f; filters.to=t;
+      $$('#periodSeg button').forEach(x=>x.classList.remove('on'));
+      renderAll();
+    }
+  };
+  $('#dateFrom').addEventListener('change',onDate);
+  $('#dateTo').addEventListener('change',onDate);
+
+  /* — proyecto / categoría — */
+  $('#filtProj').addEventListener('change',ev=>{filters.proj=ev.target.value;renderAll()});
+  $('#filtCat').addEventListener('change',ev=>{filters.cat=ev.target.value;renderAll()});
+
+  /* — reset — */
+  $('#btnReset').addEventListener('click',()=>{
+    filters={period:'30',from:null,to:null,proj:'',cat:''};
+    $('#dateFrom').value=''; $('#dateTo').value='';
+    $('#filtProj').value=''; $('#filtCat').value='';
+    $$('#periodSeg button').forEach(x=>x.classList.toggle('on',x.dataset.p==='30'));
+    renderAll();
+  });
+
+  /* — timeline granularity — */
+  $('#tlSeg').addEventListener('click',ev=>{
+    const b=ev.target.closest('button'); if(!b) return;
+    $$('#tlSeg button').forEach(x=>x.classList.toggle('on',x===b));
+    tlGranularity=b.dataset.g;
+    renderTimeline();
+  });
+
+  /* — CSV — */
+  $('#btnCsv').addEventListener('click',exportCsv);
+}
+
+load();
+populateSelects();
+bindEvents();
+renderAll();
+</script>
+</body>
+</html>

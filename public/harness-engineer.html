@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harness Engineer: La Inteligencia Artificial para Empresas Modernas | Victor IA</title>
+<meta name="description" content="Plataforma de Harness Engineering con modern engineering. Orquestación IA, verificación automática, environment optimizado. Implementación 10x más rápida.">
+<meta name="keywords" content="harness engineer ia, modern engineering, harness engineering, inteligencia artificial empresas, orquestación ia méxico">
+<link rel="canonical" href="https://victor-ia.com.mx/harness-engineer">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Harness Engineer: La Inteligencia Artificial para Empresas Modernas">
+<meta property="og:description" content="Modern engineering para el futuro del trabajo. Orquestación IA, verificación automática, environment optimizado.">
+<meta property="og:url" content="https://victor-ia.com.mx/harness-engineer">
+<meta property="og:site_name" content="Victor IA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#050505">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Victor IA — Harness Engineer",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "description": "Plataforma de Harness Engineering con modern engineering: orquestación IA, verificación automática y environment optimizado para empresas.",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "MXN", "description": "Demo gratis 24 horas sin tarjeta"},
+  "publisher": {"@type": "Organization", "name": "Victor IA", "url": "https://victor-ia.com.mx"}
+}
+</script>
+<style>
+:root{
+  --bg:#050505; --ink:#FFFFFF; --dim:rgba(255,255,255,.62); --faint:rgba(255,255,255,.38);
+  --line:rgba(255,255,255,.14); --line2:rgba(255,255,255,.07);
+  --accent:#00E5C0; --accent-dim:rgba(0,229,192,.12);
+  --font:'Inter',system-ui,sans-serif; --display:'Space Grotesk','Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img,svg{display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+section{padding:128px 0;border-top:1px solid var(--line2)}
+.eyebrow{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.eyebrow::before{content:"";width:32px;height:1px;background:var(--accent)}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.08;letter-spacing:-.02em}
+h2{font-size:clamp(32px,4.4vw,52px);max-width:760px}
+h3{font-size:20px;letter-spacing:0}
+.lead{color:var(--dim);font-size:18px;max-width:620px;margin-top:20px}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;border-bottom:1px solid var(--line);background:rgba(5,5,5,.88);backdrop-filter:blur(14px)}
+.nav-in{max-width:1180px;margin:0 auto;padding:0 32px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.logo{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;letter-spacing:.18em;font-size:14px}
+.nav-links{display:flex;gap:28px;font-size:13.5px;color:var(--dim)}
+.nav-links a{padding:4px 0;border-bottom:1px solid transparent;transition:.25s}
+.nav-links a:hover{color:var(--ink);border-color:var(--accent)}
+.nav-cta{display:flex;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:13.5px;letter-spacing:.06em;padding:13px 24px;border:1px solid var(--line);transition:.25s;cursor:pointer;background:none;color:var(--ink)}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:#021511}
+.btn.accent{border-color:var(--accent);color:var(--accent)}
+.btn.accent:hover{background:var(--accent-dim)}
+.btn .arr{transition:transform .25s}
+.btn:hover .arr{transform:translateX(4px)}
+.burger{display:none;background:none;border:1px solid var(--line);width:44px;height:44px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.burger span{display:block;width:18px;height:1.5px;background:var(--ink)}
+
+/* ===== HERO ===== */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;padding:160px 0 100px;border-top:none}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line2) 1px,transparent 1px),linear-gradient(90deg,var(--line2) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,#000 30%,transparent 75%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:64px;align-items:center}
+.hero h1{font-size:clamp(40px,5.6vw,72px)}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero-sub{color:var(--dim);font-size:19px;max-width:540px;margin:28px 0 40px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:36px;margin-top:56px;padding-top:28px;border-top:1px solid var(--line)}
+.hero-meta div strong{font-family:var(--display);font-size:26px;display:block;letter-spacing:-.02em}
+.hero-meta div span{font-size:12.5px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
+.hero-vi{position:relative}
+.hero-vi svg{width:100%;max-width:420px;margin:0 auto}
+@keyframes drawV{to{stroke-dashoffset:0}}
+@keyframes pulseN{0%,100%{opacity:.25}50%{opacity:1}}
+.hero-vi .draw{stroke-dasharray:600;stroke-dashoffset:600;animation:drawV 2.2s cubic-bezier(.6,0,.2,1) .3s forwards}
+.hero-vi .node{animation:pulseN 3s infinite}
+.hero-vi .node:nth-child(2){animation-delay:.6s}.hero-vi .node:nth-child(3){animation-delay:1.2s}
+
+/* ===== VALUE PROPS ===== */
+.vp-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-top:64px}
+.vp{padding:48px 40px;border-right:1px solid var(--line);position:relative;transition:.3s}
+.vp:last-child{border-right:none}
+.vp:hover{background:rgba(255,255,255,.025)}
+.vp::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--accent);transition:width .45s cubic-bezier(.6,0,.2,1)}
+.vp:hover::after{width:100%}
+.vp .ic{margin-bottom:28px}
+.vp h3{margin-bottom:14px}
+.vp p{color:var(--dim);font-size:15px}
+.vp .tag{position:absolute;top:20px;right:20px;font-family:var(--display);font-size:11px;color:var(--faint);letter-spacing:.2em}
+
+/* ===== COMO FUNCIONA ===== */
+.steps{margin-top:72px;display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:120px 1fr 380px;gap:48px;align-items:center;padding:56px 0;border-top:1px solid var(--line)}
+.step:last-child{border-bottom:1px solid var(--line)}
+.step-num{font-family:var(--display);font-size:64px;font-weight:700;color:transparent;-webkit-text-stroke:1px var(--faint);line-height:1}
+.step:hover .step-num{-webkit-text-stroke:1px var(--accent)}
+.step h3{font-size:26px;margin-bottom:12px}
+.step p{color:var(--dim);max-width:480px}
+.step-viz{justify-self:end}
+.step-viz svg{width:300px}
+@keyframes specLine{0%{transform:scaleX(0)}60%,100%{transform:scaleX(1)}}
+.viz-spec .sl{transform-origin:left;animation:specLine 2.4s infinite}
+.viz-spec .sl:nth-child(2){animation-delay:.3s}.viz-spec .sl:nth-child(3){animation-delay:.6s}.viz-spec .sl:nth-child(4){animation-delay:.9s}
+@keyframes gatePass{0%,15%{transform:translateX(0);opacity:1}45%{transform:translateX(108px);opacity:1}55%{opacity:0}60%{transform:translateX(0);opacity:0}70%{opacity:1}100%{transform:translateX(0)}}
+.viz-verify .pkg{animation:gatePass 3.2s infinite}
+@keyframes checkPop{0%,40%{opacity:0}55%,100%{opacity:1}}
+.viz-verify .ok{animation:checkPop 3.2s infinite}
+@keyframes iterSpin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.viz-iter .ring{transform-origin:center;animation:iterSpin 9s linear infinite}
+.viz-iter .ring2{transform-origin:center;animation:iterSpin 14s linear infinite reverse}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav aria-label="Navegación principal">
+  <div class="nav-in">
+    <a class="logo" href="/" aria-label="Victor IA — inicio">
+      <!-- LOGO VI: V geométrica + I vertical en marco cuadrado -->
+      <svg width="36" height="36" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="45" height="45" stroke="#FFF" stroke-width="2"/>
+        <path d="M10 12 L19 36 L28 12" stroke="#FFF" stroke-width="2.5" stroke-linecap="square"/>
+        <line x1="36" y1="12" x2="36" y2="36" stroke="#00E5C0" stroke-width="2.5"/>
+      </svg>
+      VICTOR&nbsp;IA
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#caracteristicas">Características</a>
+      <a href="#precios">Precios</a>
+      <a href="#casos-uso">Casos de uso</a>
+      <a href="/blog/">Blog</a>
+      <a href="#seguridad">Seguridad</a>
+      <a href="#documentacion">Docs</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn" href="/app">Iniciar sesión</a>
+      <a class="btn primary" href="#contacto">Demo gratis 24h</a>
+      <button class="burger" id="burger" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-grid-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Plataforma de Harness Engineering</p>
+      <h1>Harness Engineer: La Inteligencia Artificial para <em>Empresas Modernas</em></h1>
+      <p class="hero-sub">Modern engineering para el futuro del trabajo: especificación, verificación y environment optimizado. Orquestación de IA que entrega resultados medibles — no promesas.</p>
+      <div class="hero-ctas">
+        <a class="btn primary" href="#contacto">Demo gratis (24h) <span class="arr">→</span></a>
+        <a class="btn accent" href="#como-funciona">Ver cómo funciona</a>
+        <a class="btn" href="/app">Iniciar sesión</a>
+      </div>
+      <div class="hero-meta">
+        <div><strong>10x</strong><span>Más rápido</span></div>
+        <div><strong>24h</strong><span>Demo sin tarjeta</span></div>
+        <div><strong>175+</strong><span>Artículos de IA</span></div>
+      </div>
+    </div>
+    <div class="hero-vi" aria-hidden="true">
+      <!-- Geometría VI animada: harness conectando nodos -->
+      <svg viewBox="0 0 320 320" fill="none">
+        <rect x="8" y="8" width="304" height="304" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+        <path class="draw" d="M70 70 L130 250 L190 70" stroke="#FFF" stroke-width="3" stroke-linecap="square"/>
+        <line class="draw" x1="244" y1="70" x2="244" y2="250" stroke="#00E5C0" stroke-width="3"/>
+        <line x1="70" y1="70" x2="244" y2="70" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+        <line x1="130" y1="250" x2="244" y2="250" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+        <line x1="190" y1="70" x2="244" y2="250" stroke="rgba(0,229,192,.25)" stroke-width="1"/>
+        <rect class="node" x="64" y="64" width="12" height="12" fill="#FFF"/>
+        <rect class="node" x="184" y="64" width="12" height="12" fill="#FFF"/>
+        <rect class="node" x="238" y="244" width="12" height="12" fill="#00E5C0"/>
+        <rect x="124" y="244" width="12" height="12" fill="#FFF"/>
+        <rect x="238" y="64" width="12" height="12" fill="#00E5C0"/>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- ============ VALUE PROPS ============ -->
+<section aria-labelledby="vp-title" style="border-top:1px solid var(--line)">
+  <div class="wrap">
+    <p class="eyebrow">Por qué un harness</p>
+    <h2 id="vp-title">La IA sin harness es un experimento. Con harness, es infraestructura.</h2>
+    <div class="vp-grid reveal">
+      <article class="vp">
+        <span class="tag">01</span>
+        <!-- icon: nodos conectados -->
+        <svg class="ic" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect x="4" y="4" width="10" height="10" stroke="#FFF" stroke-width="2"/>
+          <rect x="34" y="4" width="10" height="10" stroke="#FFF" stroke-width="2"/>
+          <rect x="19" y="34" width="10" height="10" stroke="#00E5C0" stroke-width="2"/>
+          <line x1="14" y1="14" x2="22" y2="34" stroke="#FFF" stroke-width="1.5"/>
+          <line x1="34" y1="14" x2="26" y2="34" stroke="#FFF" stroke-width="1.5"/>
+          <line x1="14" y1="9" x2="34" y2="9" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+        </svg>
+        <h3>Orquestación Inteligente</h3>
+        <p>Integración total sin silos. Tus sistemas, tus datos y tus equipos operando bajo un solo harness — cada agente sabe qué hacer y cuándo.</p>
+      </article>
+      <article class="vp">
+        <span class="tag">02</span>
+        <!-- icon: V + gate de verificación -->
+        <svg class="ic" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect x="4" y="4" width="40" height="40" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+          <path d="M14 18 L22 34 L34 12" stroke="#00E5C0" stroke-width="2.5" stroke-linecap="square"/>
+          <line x1="4" y1="24" x2="14" y2="24" stroke="#FFF" stroke-width="1.5"/>
+          <line x1="38" y1="24" x2="44" y2="24" stroke="#FFF" stroke-width="1.5"/>
+        </svg>
+        <h3>Modern Engineering</h3>
+        <p>Especificación + verificación + entorno. La metodología que convierte la IA experimental en sistemas confiables que pasan auditoría.</p>
+      </article>
+      <article class="vp">
+        <span class="tag">03</span>
+        <!-- icon: escalones ascendentes -->
+        <svg class="ic" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect x="4" y="34" width="10" height="10" stroke="#FFF" stroke-width="2"/>
+          <rect x="19" y="22" width="10" height="22" stroke="#FFF" stroke-width="2"/>
+          <rect x="34" y="8" width="10" height="36" stroke="#00E5C0" stroke-width="2"/>
+          <line x1="4" y1="30" x2="40" y2="4" stroke="rgba(0,229,192,.5)" stroke-width="1.5"/>
+        </svg>
+        <h3>Escalable desde el día 1</h3>
+        <p>De startup a enterprise sin reescribir nada. El mismo harness que arranca tu primera automatización sostiene tu operación completa.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMO FUNCIONA ============ -->
+<section id="como-funciona" aria-labelledby="cf-title">
+  <div class="wrap">
+    <p class="eyebrow">Cómo funciona</p>
+    <h2 id="cf-title">Tres movimientos. Cero improvisación.</h2>
+    <p class="lead">El método del harness engineer: especificar antes de ejecutar, verificar antes de entregar, iterar antes que la competencia.</p>
+    <div class="steps">
+      <article class="step reveal">
+        <div class="step-num">01</div>
+        <div>
+          <h3>Define tu Spec</h3>
+          <p>Describe qué necesitas con precisión quirúrgica. El harness convierte tu especificación en un plan ejecutable con criterios de éxito medibles — sin ambigüedad, sin alucinaciones.</p>
+        </div>
+        <div class="step-viz" aria-hidden="true">
+          <svg class="viz-spec" viewBox="0 0 300 160" fill="none">
+            <rect x="20" y="14" width="180" height="132" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+            <rect class="sl" x="38" y="36" width="120" height="3" fill="#FFF"/>
+            <rect class="sl" x="38" y="60" width="144" height="3" fill="rgba(255,255,255,.55)"/>
+            <rect class="sl" x="38" y="84" width="96" height="3" fill="rgba(255,255,255,.55)"/>
+            <rect class="sl" x="38" y="108" width="130" height="3" fill="#00E5C0"/>
+            <path d="M214 80 L244 80 M236 72 L244 80 L236 88" stroke="#00E5C0" stroke-width="2"/>
+            <rect x="256" y="68" width="24" height="24" stroke="#FFF" stroke-width="2"/>
+          </svg>
+        </div>
+      </article>
+      <article class="step reveal">
+        <div class="step-num">02</div>
+        <div>
+          <h3>Verifica resultados</h3>
+          <p>La IA se auto-evalúa contra tu spec con quality gates automáticos y segunda opinión de un modelo independiente. Nada llega a producción sin pasar verificación.</p>
+        </div>
+        <div class="step-viz" aria-hidden="true">
+          <svg class="viz-verify" viewBox="0 0 300 160" fill="none">
+            <line x1="14" y1="80" x2="286" y2="80" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+            <line x1="150" y1="30" x2="150" y2="66" stroke="#00E5C0" stroke-width="2"/>
+            <line x1="150" y1="94" x2="150" y2="130" stroke="#00E5C0" stroke-width="2"/>
+            <rect class="pkg" x="40" y="68" width="24" height="24" stroke="#FFF" stroke-width="2"/>
+            <path class="ok" d="M226 74 L236 88 L254 60" stroke="#00E5C0" stroke-width="2.5" stroke-linecap="square"/>
+            <text x="150" y="22" fill="rgba(255,255,255,.45)" font-family="Space Grotesk" font-size="10" letter-spacing="2" text-anchor="middle">QUALITY GATE</text>
+          </svg>
+        </div>
+      </article>
+      <article class="step reveal">
+        <div class="step-num">03</div>
+        <div>
+          <h3>Itera con IA</h3>
+          <p>Cada ciclo aprende del anterior. Mejora continua sin límites: tu harness acumula contexto, patrones y reglas — se vuelve más preciso con cada entrega.</p>
+        </div>
+        <div class="step-viz" aria-hidden="true">
+          <svg class="viz-iter" viewBox="0 0 300 160" fill="none">
+            <g class="ring">
+              <path d="M150 30 L210 80 L150 130 L90 80 Z" stroke="#FFF" stroke-width="1.5" fill="none"/>
+              <rect x="144" y="24" width="12" height="12" fill="#00E5C0"/>
+            </g>
+            <g class="ring2">
+              <path d="M150 52 L184 80 L150 108 L116 80 Z" stroke="rgba(0,229,192,.6)" stroke-width="1.5" fill="none"/>
+            </g>
+            <rect x="144" y="74" width="12" height="12" fill="#FFF"/>
+          </svg>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<style>
+/* ===== CARACTERISTICAS — 6 layouts únicos ===== */
+.feat{margin-top:72px;display:flex;flex-direction:column;gap:0}
+.f-block{border:1px solid var(--line);border-bottom:none}
+.f-block:last-child{border-bottom:1px solid var(--line)}
+/* F1 — Ejército alineado: formación de triángulos */
+.f1{display:grid;grid-template-columns:1fr 1fr;min-height:340px}
+.f1-copy{padding:56px;display:flex;flex-direction:column;justify-content:center}
+.f1-viz{border-left:1px solid var(--line);display:flex;align-items:center;justify-content:center;padding:40px;background:linear-gradient(135deg,transparent 60%,var(--accent-dim))}
+@keyframes formUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.f1-viz svg g{animation:formUp 3.4s ease-in-out infinite}
+.f1-viz svg g:nth-child(2){animation-delay:.4s}.f1-viz svg g:nth-child(3){animation-delay:.8s}
+/* F2 — Harness: banda horizontal full-width */
+.f2{padding:64px 56px;display:flex;align-items:center;gap:56px;background:rgba(255,255,255,.02)}
+.f2 .f2-rail{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--accent) 0 18px,transparent 18px 30px);min-width:80px}
+.f2 h3{white-space:nowrap}
+.f2 p{max-width:380px;color:var(--dim);font-size:15px}
+/* F3 — Verificación: split con sello */
+.f3{display:grid;grid-template-columns:.9fr 1.1fr;min-height:300px}
+.f3-viz{display:flex;align-items:center;justify-content:center;border-right:1px solid var(--line);padding:40px;position:relative}
+.f3-viz::after{content:"2ND OPINION";position:absolute;bottom:18px;font-family:var(--display);font-size:10px;letter-spacing:.3em;color:var(--faint)}
+.f3-copy{padding:56px;display:flex;flex-direction:column;justify-content:center}
+/* F4 — Environment: terminal de reglas */
+.f4{display:grid;grid-template-columns:1.1fr .9fr;min-height:340px}
+.f4-copy{padding:56px;display:flex;flex-direction:column;justify-content:center}
+.f4-term{border-left:1px solid var(--line);padding:40px 44px;font-family:'Space Grotesk',monospace;font-size:13.5px;background:#020806;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.f4-term .ln{display:flex;gap:14px;color:var(--dim)}
+.f4-term .ln b{color:var(--accent);font-weight:500}
+.f4-term .ln.hd{color:var(--faint);letter-spacing:.2em;font-size:11px}
+/* F5 — Velocidad: barras comparativas */
+.f5{padding:56px}
+.f5-bars{margin-top:36px;display:flex;flex-direction:column;gap:22px}
+.f5-row{display:grid;grid-template-columns:200px 1fr 90px;gap:20px;align-items:center;font-size:13.5px}
+.f5-row .lbl{color:var(--dim)}
+.f5-row .bar{height:10px;background:var(--line2);position:relative}
+.f5-row .bar i{position:absolute;inset:0 auto 0 0;width:0;transition:width 1.4s cubic-bezier(.6,0,.2,1)}
+.f5-row.slow .bar i{background:rgba(255,255,255,.35)}
+.f5-row.fast .bar i{background:var(--accent)}
+.in .f5-row.slow .bar i{width:92%}
+.in .f5-row.fast .bar i{width:11%}
+.f5-row .val{font-family:var(--display);font-weight:700;text-align:right}
+.f5-row.fast .val{color:var(--accent)}
+/* F6 — ROI: stat ledger */
+.f6{display:grid;grid-template-columns:repeat(3,1fr)}
+.f6-cell{padding:48px 40px;border-right:1px solid var(--line)}
+.f6-cell:last-child{border-right:none}
+.f6-cell strong{font-family:var(--display);font-size:40px;font-weight:700;display:block;letter-spacing:-.02em}
+.f6-cell strong em{font-style:normal;color:var(--accent)}
+.f6-cell span{font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.12em;display:block;margin-top:8px}
+.f6-cell p{color:var(--dim);font-size:14px;margin-top:16px}
+.f-head{padding:48px 56px 40px;border-bottom:1px solid var(--line)}
+.f-head h3{font-size:26px}
+.f-head p{color:var(--dim);margin-top:10px;max-width:560px}
+
+/* ===== PRECIOS ===== */
+.pricing{margin-top:72px;display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:0;align-items:stretch}
+.tier{border:1px solid var(--line);padding:52px 44px;display:flex;flex-direction:column;position:relative}
+.tier + .tier{border-left:none}
+.tier.hot{border:1px solid var(--accent);margin:-20px 0;padding-top:72px;background:linear-gradient(180deg,var(--accent-dim),transparent 40%);z-index:2}
+.tier .t-name{font-family:var(--display);font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--faint)}
+.tier.hot .t-name{color:var(--accent)}
+.tier .t-price{font-family:var(--display);font-size:44px;font-weight:700;margin:22px 0 6px;letter-spacing:-.02em}
+.tier .t-price small{font-size:15px;font-weight:500;color:var(--dim)}
+.tier .t-tag{font-size:13px;color:var(--dim);margin-bottom:30px}
+.tier ul{list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:40px;flex:1}
+.tier li{font-size:14.5px;color:var(--dim);padding-left:26px;position:relative}
+.tier li::before{content:"";position:absolute;left:0;top:7px;width:10px;height:10px;border:1.5px solid var(--accent);transform:rotate(45deg)}
+.tier .badge{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);background:var(--accent);color:#021511;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.22em;padding:7px 18px}
+</style>
+
+<!-- ============ CARACTERISTICAS ============ -->
+<section id="caracteristicas" aria-labelledby="ft-title">
+  <div class="wrap">
+    <p class="eyebrow">Características</p>
+    <h2 id="ft-title">No es otra herramienta de IA. Es el harness que las gobierna a todas.</h2>
+    <div class="feat">
+
+      <!-- F1: Agentes Especializados -->
+      <article class="f-block f1 reveal">
+        <div class="f1-copy">
+          <h3>Ejército de IA alineado a tu objetivo</h3>
+          <p style="color:var(--dim);margin-top:14px">No contratas un chatbot: despliegas agentes especializados que investigan, redactan, analizan y verifican — todos coordinados bajo la misma especificación. Un solo objetivo, cero fricción.</p>
+        </div>
+        <div class="f1-viz" aria-hidden="true">
+          <svg width="220" height="160" viewBox="0 0 220 160" fill="none">
+            <g><path d="M110 14 L126 42 L94 42 Z" stroke="#00E5C0" stroke-width="2"/></g>
+            <g>
+              <path d="M70 66 L86 94 L54 94 Z" stroke="#FFF" stroke-width="1.5"/>
+              <path d="M150 66 L166 94 L134 94 Z" stroke="#FFF" stroke-width="1.5"/>
+            </g>
+            <g>
+              <path d="M34 118 L50 146 L18 146 Z" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+              <path d="M110 118 L126 146 L94 146 Z" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+              <path d="M186 118 L202 146 L170 146 Z" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+            </g>
+          </svg>
+        </div>
+      </article>
+
+      <!-- F2: Harness Completo -->
+      <article class="f-block f2 reveal">
+        <h3>Harness Completo</h3>
+        <div class="f2-rail" aria-hidden="true"></div>
+        <p>Orquestación, no gestión. Roles definidos, handoffs sin pérdida de contexto y un pipeline que va de la idea al entregable verificado — sin que tengas que supervisar cada paso.</p>
+      </article>
+
+      <!-- F3: Verificación Inteligente -->
+      <article class="f-block f3 reveal">
+        <div class="f3-viz" aria-hidden="true">
+          <svg width="180" height="180" viewBox="0 0 180 180" fill="none">
+            <path d="M40 40 L90 140 L140 40" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="square"/>
+            <path d="M56 40 L90 110 L124 40" stroke="#00E5C0" stroke-width="2.5" stroke-linecap="square"/>
+            <rect x="20" y="20" width="140" height="140" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="f3-copy">
+          <h3>Verificación Inteligente</h3>
+          <p style="color:var(--dim);margin-top:14px">Cada entregable pasa por quality gates y recibe la segunda opinión de un modelo independiente antes de llegar a ti. Si no pasa el estándar, se rehace — automáticamente.</p>
+        </div>
+      </article>
+
+      <!-- F4: Environment Optimizado -->
+      <article class="f-block f4 reveal">
+        <div class="f4-copy">
+          <h3>Environment Optimizado</h3>
+          <p style="color:var(--dim);margin-top:14px">Tu knowledge base, tus reglas, tu voz de marca. El harness opera dentro de un entorno que tú defines: la IA nunca improvisa fuera de tus límites.</p>
+        </div>
+        <div class="f4-term" aria-hidden="true">
+          <div class="ln hd">ENVIRONMENT.CONFIG</div>
+          <div class="ln"><b>knowledge</b> → base_documental_empresa</div>
+          <div class="ln"><b>reglas</b> → compliance + voz_de_marca</div>
+          <div class="ln"><b>limites</b> → presupuesto_tokens / SLA</div>
+          <div class="ln"><b>memoria</b> → contexto_persistente ✓</div>
+        </div>
+      </article>
+
+      <!-- F5: Velocidad 10x -->
+      <article class="f-block reveal">
+        <div class="f-head">
+          <h3>Velocidad 10x</h3>
+          <p>Implementación en días, no trimestres. Lo que un proyecto tradicional de IA tarda meses en producir, el harness lo entrega verificado la misma semana.</p>
+        </div>
+        <div class="f5">
+          <div class="f5-bars">
+            <div class="f5-row slow"><span class="lbl">Implementación tradicional</span><div class="bar"><i></i></div><span class="val">6 meses</span></div>
+            <div class="f5-row fast"><span class="lbl">Con Harness Engineer</span><div class="bar"><i></i></div><span class="val">12 días</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- F6: ROI Garantizado -->
+      <article class="f-block f6 reveal">
+        <div class="f6-cell">
+          <strong><em>$0</em></strong>
+          <span>Costos ocultos</span>
+          <p>Tokenomía transparente: ves exactamente qué consume cada tarea y cuánto vale el resultado.</p>
+        </div>
+        <div class="f6-cell">
+          <strong>100<em>%</em></strong>
+          <span>Pago por valor</span>
+          <p>No pagas licencias infladas por asientos vacíos. Pagas por trabajo entregado y verificado.</p>
+        </div>
+        <div class="f6-cell">
+          <strong>24<em>h</em></strong>
+          <span>Para comprobarlo</span>
+          <p>La demo gratuita de 24 horas corre sobre tu caso real — el ROI se demuestra, no se promete.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRECIOS ============ -->
+<section id="precios" aria-labelledby="pr-title">
+  <div class="wrap">
+    <p class="eyebrow">Precios</p>
+    <h2 id="pr-title">Empieza gratis. Escala cuando el valor sea evidente.</h2>
+    <p class="lead">Sin contratos forzosos, sin tarjeta para probar, sin letra chica en el consumo.</p>
+    <div class="pricing reveal">
+      <article class="tier">
+        <p class="t-name">Explorador</p>
+        <p class="t-price">$0 <small>/ 24 horas</small></p>
+        <p class="t-tag">Prueba la plataforma completa sin tarjeta.</p>
+        <ul>
+          <li>Acceso total al harness por 24h</li>
+          <li>Corre sobre tu caso de uso real</li>
+          <li>Agentes + verificación incluidos</li>
+          <li>Sin compromiso, sin datos de pago</li>
+        </ul>
+        <a class="btn" href="#contacto" style="justify-content:center">Activar demo</a>
+      </article>
+      <article class="tier hot">
+        <span class="badge">MÁS ELEGIDO</span>
+        <p class="t-name">Teams</p>
+        <p class="t-price">$4,900 <small>MXN / mes</small></p>
+        <p class="t-tag">+ tokens por consumo. Tokenomía transparente.</p>
+        <ul>
+          <li>Harness completo para tu equipo</li>
+          <li>Environment con tu knowledge base</li>
+          <li>Quality gates + segunda opinión IA</li>
+          <li>Dashboard de consumo en tiempo real</li>
+          <li>Soporte prioritario en español</li>
+        </ul>
+        <a class="btn primary" href="#contacto" style="justify-content:center">Empezar con Teams →</a>
+      </article>
+      <article class="tier">
+        <p class="t-name">Enterprise</p>
+        <p class="t-price">A medida</p>
+        <p class="t-tag">Implementación dedicada con SLA firmado.</p>
+        <ul>
+          <li>Harness engineer dedicado</li>
+          <li>Integración con tus sistemas internos</li>
+          <li>SLA de disponibilidad y respuesta</li>
+          <li>Compliance y auditoría a tu medida</li>
+        </ul>
+        <a class="btn accent" href="#contacto" style="justify-content:center">Hablar con ventas</a>
+      </article>
+    </div>
+  </div>
+</section>
+<style>
+/* ===== CASOS DE USO ===== */
+.cases{margin-top:64px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.case{padding:40px 36px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:16px;transition:.3s;position:relative;overflow:hidden}
+.case:hover{background:rgba(255,255,255,.03)}
+.case .c-arrow{position:absolute;top:32px;right:32px;color:var(--faint);transition:.3s;font-family:var(--display)}
+.case:hover .c-arrow{color:var(--accent);transform:translate(4px,-4px)}
+.case h3{font-size:17px}
+.case p{font-size:13.5px;color:var(--faint)}
+.case .ic{color:var(--ink)}
+.cases-cta{margin-top:48px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.cases-cta .count{font-family:var(--display);color:var(--faint);font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+
+/* ===== SEGURIDAD ===== */
+.sec-wrap{display:grid;grid-template-columns:.95fr 1.05fr;gap:72px;align-items:start}
+.sec-shield{position:sticky;top:120px}
+.sec-shield svg{width:100%;max-width:340px}
+@keyframes weave{0%,100%{opacity:.3}50%{opacity:1}}
+.sec-shield .wv{animation:weave 3.6s infinite}
+.sec-shield .wv:nth-child(2){animation-delay:.9s}.sec-shield .wv:nth-child(3){animation-delay:1.8s}.sec-shield .wv:nth-child(4){animation-delay:2.7s}
+.sec-items{display:flex;flex-direction:column}
+.sec-item{padding:36px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:56px 1fr;gap:24px}
+.sec-item:first-child{border-top:1px solid var(--line)}
+.sec-item h3{font-size:18px;margin-bottom:8px}
+.sec-item p{color:var(--dim);font-size:14.5px}
+.sec-item .diff{display:inline-block;margin-top:10px;font-family:var(--display);font-size:11px;letter-spacing:.2em;color:var(--accent);border:1px solid rgba(0,229,192,.4);padding:5px 12px}
+
+/* ===== DOCUMENTACION ===== */
+.docs-band{margin-top:64px;border:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr}
+.docs-cell{padding:56px;display:flex;flex-direction:column;gap:18px}
+.docs-cell:first-child{border-right:1px solid var(--line)}
+.docs-cell .big{font-family:var(--display);font-size:56px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.docs-cell .big em{font-style:normal;color:var(--accent)}
+.docs-cell p{color:var(--dim);font-size:15px;max-width:380px}
+.docs-cell .btn{align-self:flex-start;margin-top:auto}
+
+/* ===== CONTACTO ===== */
+#contacto{background:linear-gradient(180deg,transparent,rgba(0,229,192,.05))}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:56px;align-items:start}
+.c-form{display:flex;flex-direction:column;gap:0;border:1px solid var(--line)}
+.c-form .row{display:grid;grid-template-columns:1fr 1fr}
+.c-form input,.c-form select,.c-form textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:20px 22px;color:var(--ink);font-family:var(--font);font-size:14.5px;outline:none}
+.c-form .row input:first-child{border-right:1px solid var(--line)}
+.c-form select{appearance:none;cursor:pointer}
+.c-form select option{background:#0a0a0a}
+.c-form input:focus,.c-form select:focus,.c-form textarea:focus{border-bottom-color:var(--accent)}
+.c-form textarea{resize:vertical;min-height:110px;border-bottom:none}
+.c-form button{margin:0;width:100%;justify-content:center;padding:20px;border:none;border-top:1px solid var(--line)}
+.c-note{font-size:12.5px;color:var(--faint);margin-top:14px}
+.c-side h3{font-size:22px;margin-bottom:14px}
+.c-side p{color:var(--dim);font-size:15px;margin-bottom:28px}
+.c-steps{display:flex;flex-direction:column;gap:0;border-left:2px solid var(--line)}
+.c-steps div{padding:14px 0 14px 28px;position:relative;font-size:14px;color:var(--dim)}
+.c-steps div::before{content:"";position:absolute;left:-7px;top:21px;width:12px;height:12px;background:var(--bg);border:2px solid var(--accent);transform:rotate(45deg)}
+.c-steps b{color:var(--ink);font-family:var(--display)}
+
+/* ===== FOOTER ===== */
+footer{border-top:1px solid var(--line);padding:80px 0 48px}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1.2fr;gap:64px;padding-bottom:56px;border-bottom:1px solid var(--line2)}
+.foot-grid .logo{margin-bottom:20px}
+.foot-grid p{color:var(--faint);font-size:13.5px;max-width:300px}
+.foot-links{display:flex;flex-direction:column;gap:14px;font-size:14px;color:var(--dim)}
+.foot-links a:hover{color:var(--accent)}
+.foot-news h3{font-size:15px;margin-bottom:8px}
+.foot-news p{font-size:13px;color:var(--faint);margin-bottom:18px}
+.news-form{display:flex;border:1px solid var(--line)}
+.news-form input{flex:1;background:none;border:none;padding:14px 18px;color:var(--ink);font-size:14px;outline:none}
+.news-form button{background:var(--ink);color:var(--bg);border:none;padding:0 22px;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.1em;cursor:pointer;transition:.25s}
+.news-form button:hover{background:var(--accent)}
+.foot-base{display:flex;justify-content:space-between;align-items:center;padding-top:32px;font-size:12.5px;color:var(--faint);flex-wrap:wrap;gap:16px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .hero .wrap{grid-template-columns:1fr;gap:48px}
+  .hero-vi svg{max-width:300px}
+  .step{grid-template-columns:80px 1fr;}
+  .step-viz{grid-column:2;justify-self:start}
+  .sec-wrap{grid-template-columns:1fr;gap:48px}
+  .sec-shield{position:static}
+  .nav-links{display:none}
+}
+@media(max-width:820px){
+  section{padding:88px 0}
+  .vp-grid{grid-template-columns:1fr}
+  .vp{border-right:none;border-bottom:1px solid var(--line)}
+  .vp:last-child{border-bottom:none}
+  .f1,.f3,.f4{grid-template-columns:1fr}
+  .f1-viz,.f4-term{border-left:none;border-top:1px solid var(--line)}
+  .f3-viz{border-right:none;border-bottom:1px solid var(--line)}
+  .f2{flex-direction:column;align-items:flex-start;gap:24px}
+  .f2 .f2-rail{width:100%;flex:none}
+  .f6{grid-template-columns:1fr}
+  .f6-cell{border-right:none;border-bottom:1px solid var(--line)}
+  .f6-cell:last-child{border-bottom:none}
+  .pricing{grid-template-columns:1fr;gap:28px}
+  .tier + .tier{border-left:1px solid var(--line)}
+  .tier.hot{margin:0;border:1px solid var(--accent)}
+  .cases{grid-template-columns:1fr}
+  .docs-band{grid-template-columns:1fr}
+  .docs-cell:first-child{border-right:none;border-bottom:1px solid var(--line)}
+  .contact-grid{grid-template-columns:1fr;gap:48px}
+  .foot-grid{grid-template-columns:1fr;gap:40px}
+  .f5-row{grid-template-columns:1fr;gap:8px}
+  .f5-row .val{text-align:left}
+  .burger{display:flex}
+  .nav-cta .btn:not(.primary){display:none}
+  .nav-links.open{display:flex;position:fixed;top:72px;left:0;right:0;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--line);padding:24px 32px;gap:18px;font-size:16px}
+  .hero-meta{flex-wrap:wrap;gap:24px}
+  .f1-copy,.f3-copy,.f4-copy,.f-head,.f5,.f2{padding:36px 28px}
+}
+</style>
+
+<!-- ============ CASOS DE USO ============ -->
+<section id="casos-uso" aria-labelledby="cu-title">
+  <div class="wrap">
+    <p class="eyebrow">Casos de uso</p>
+    <h2 id="cu-title">Explora cómo Victor IA revoluciona cada sector</h2>
+    <p class="lead">Análisis reales de implementación por industria, escritos para decisores — no para programadores.</p>
+    <div class="cases reveal">
+      <a class="case" href="/blog/ia-hoteles-mexico.html">
+        <svg class="ic" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="6" y="12" width="28" height="22" stroke="currentColor" stroke-width="2"/><path d="M6 12 L20 4 L34 12" stroke="#00E5C0" stroke-width="2" stroke-linecap="square"/><rect x="17" y="24" width="6" height="10" stroke="currentColor" stroke-width="1.5"/></svg>
+        <h3>Hoteles &amp; Resorts</h3>
+        <p>Concierge IA, revenue management y operación 24/7 sin crecer nómina.</p>
+        <span class="c-arrow">↗</span>
+      </a>
+      <a class="case" href="/blog/ia-pymes-mexico.html">
+        <svg class="ic" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="6" y="22" width="12" height="12" stroke="currentColor" stroke-width="2"/><rect x="22" y="6" width="12" height="12" stroke="#00E5C0" stroke-width="2"/><line x1="18" y1="22" x2="22" y2="18" stroke="currentColor" stroke-width="1.5"/></svg>
+        <h3>PyMEs</h3>
+        <p>El harness que le da a tu PyME capacidades de corporativo desde el día uno.</p>
+        <span class="c-arrow">↗</span>
+      </a>
+      <a class="case" href="/blog/automatizar-marketing-ia-mexico.html">
+        <svg class="ic" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 30 L18 18 L24 24 L34 8" stroke="currentColor" stroke-width="2" stroke-linecap="square"/><path d="M26 8 L34 8 L34 16" stroke="#00E5C0" stroke-width="2" stroke-linecap="square"/></svg>
+        <h3>Marketing &amp; Agencias</h3>
+        <p>Producción de contenido, campañas y reporting automatizados con verificación.</p>
+        <span class="c-arrow">↗</span>
+      </a>
+      <a class="case" href="/blog/ia-sector-turismo-mexico.html">
+        <svg class="ic" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 4 L36 36 L4 36 Z" stroke="currentColor" stroke-width="2"/><line x1="20" y1="16" x2="20" y2="28" stroke="#00E5C0" stroke-width="2"/></svg>
+        <h3>Turismo</h3>
+        <p>Atención multilingüe, itinerarios inteligentes y conversión de reservas.</p>
+        <span class="c-arrow">↗</span>
+      </a>
+      <a class="case" href="/blog/reducir-costos-ia.html">
+        <svg class="ic" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><line x1="34" y1="6" x2="6" y2="34" stroke="#00E5C0" stroke-width="2.5"/><rect x="6" y="6" width="10" height="10" stroke="currentColor" stroke-width="2"/><rect x="24" y="24" width="10" height="10" stroke="currentColor" stroke-width="2"/></svg>
+        <h3>Operaciones &amp; Costos</h3>
+        <p>Dónde recorta la IA primero: procesos, retrabajos y tiempos muertos.</p>
+        <span class="c-arrow">↗</span>
+      </a>
+      <a class="case" href="/blog/telemetria-iot-flotillas-mexico.html">
+        <svg class="ic" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><line x1="4" y1="32" x2="36" y2="32" stroke="currentColor" stroke-width="2"/><path d="M8 32 L14 18 L22 26 L30 10" stroke="#00E5C0" stroke-width="2" stroke-linecap="square"/><rect x="27" y="7" width="6" height="6" fill="currentColor"/></svg>
+        <h3>Logística &amp; Flotillas</h3>
+        <p>Telemetría IoT + IA: cada unidad reportando, cada ruta optimizada.</p>
+        <span class="c-arrow">↗</span>
+      </a>
+    </div>
+    <div class="cases-cta">
+      <a class="btn accent" href="/blog/">Ver todos los análisis por industria <span class="arr">→</span></a>
+      <span class="count">175+ artículos en el blog</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SEGURIDAD ============ -->
+<section id="seguridad" aria-labelledby="sg-title">
+  <div class="wrap">
+    <p class="eyebrow">Seguridad</p>
+    <h2 id="sg-title">Enterprise-grade, construido para cumplimiento</h2>
+    <div class="sec-wrap" style="margin-top:64px">
+      <div class="sec-shield" aria-hidden="true">
+        <!-- Shield geométrico: rombos entrecruzados -->
+        <svg viewBox="0 0 280 280" fill="none">
+          <path d="M140 16 L252 70 L252 160 L140 264 L28 160 L28 70 Z" stroke="#FFF" stroke-width="2"/>
+          <line class="wv" x1="28" y1="70" x2="252" y2="160" stroke="rgba(0,229,192,.7)" stroke-width="1.5"/>
+          <line class="wv" x1="252" y1="70" x2="28" y2="160" stroke="rgba(0,229,192,.7)" stroke-width="1.5"/>
+          <line class="wv" x1="140" y1="16" x2="140" y2="264" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+          <line class="wv" x1="84" y1="43" x2="196" y2="212" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+          <rect x="132" y="132" width="16" height="16" fill="#00E5C0"/>
+        </svg>
+      </div>
+      <div class="sec-items">
+        <div class="sec-item reveal">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true"><rect x="8" y="20" width="28" height="18" stroke="#FFF" stroke-width="2"/><path d="M14 20 V14 a8 8 0 0 1 16 0 v6" stroke="#00E5C0" stroke-width="2"/><line x1="22" y1="27" x2="22" y2="32" stroke="#FFF" stroke-width="2"/></svg>
+          <div>
+            <h3>API keys nunca públicas</h3>
+            <p>Tus credenciales viven cifradas del lado del servidor. Jamás se exponen en el navegador ni en el código del cliente.</p>
+            <span class="diff">DIFERENCIA VS COMPETENCIA</span>
+          </div>
+        </div>
+        <div class="sec-item reveal">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true"><rect x="4" y="16" width="12" height="12" stroke="#FFF" stroke-width="2"/><rect x="28" y="16" width="12" height="12" stroke="#FFF" stroke-width="2"/><path d="M16 22 H28" stroke="#00E5C0" stroke-width="2" stroke-dasharray="3 4"/></svg>
+          <div>
+            <h3>Cifrado end-to-end</h3>
+            <p>Datos cifrados en tránsito y en reposo. Lo que entra a tu environment no sale de él — ni para entrenar modelos de terceros.</p>
+          </div>
+        </div>
+        <div class="sec-item reveal">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true"><rect x="6" y="6" width="32" height="32" stroke="#FFF" stroke-width="2"/><path d="M14 22 L20 29 L31 14" stroke="#00E5C0" stroke-width="2.5" stroke-linecap="square"/></svg>
+          <div>
+            <h3>GDPR / LFPDPPP compliance</h3>
+            <p>Cumplimiento con la regulación europea y mexicana de protección de datos personales desde el diseño, no como parche.</p>
+          </div>
+        </div>
+        <div class="sec-item reveal">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true"><line x1="8" y1="36" x2="8" y2="20" stroke="#FFF" stroke-width="2"/><line x1="18" y1="36" x2="18" y2="12" stroke="#FFF" stroke-width="2"/><line x1="28" y1="36" x2="28" y2="26" stroke="#FFF" stroke-width="2"/><line x1="38" y1="36" x2="38" y2="8" stroke="#00E5C0" stroke-width="2"/></svg>
+          <div>
+            <h3>SOC 2 audit track</h3>
+            <p>Controles, bitácoras y trazabilidad de cada acción del harness alineados al estándar SOC 2 — listos para tu auditoría.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOCUMENTACION ============ -->
+<section id="documentacion" aria-labelledby="dc-title">
+  <div class="wrap">
+    <p class="eyebrow">Documentación</p>
+    <h2 id="dc-title">Todo lo que necesitas saber, ya está escrito</h2>
+    <div class="docs-band reveal">
+      <div class="docs-cell">
+        <span class="big">175<em>+</em></span>
+        <h3>Artículos de IA aplicada</h3>
+        <p>El motor de contenido de Victor IA: análisis por industria, casos reales, comparativas y guías de implementación en México.</p>
+        <a class="btn primary" href="/blog/">Explorar el blog <span class="arr">→</span></a>
+      </div>
+      <div class="docs-cell">
+        <span class="big">12</span>
+        <h3>Guías premium</h3>
+        <p>Documentos de profundidad para decisores: desde "Cómo implementar IA en tu empresa" hasta la guía definitiva de agentes 2026.</p>
+        <a class="btn accent" href="/blog/implementar-ia-empresa-mexico.html">Leer la guía definitiva 2026 <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACTO ============ -->
+<section id="contacto" aria-labelledby="ct-title">
+  <div class="wrap">
+    <p class="eyebrow">Contacto</p>
+    <h2 id="ct-title">Activa tu demo de 24 horas</h2>
+    <div class="contact-grid">
+      <div>
+        <form class="c-form" action="mailto:hola@victor-ia.com.mx" method="post" enctype="text/plain">
+          <div class="row">
+            <input type="text" name="nombre" placeholder="Nombre" required aria-label="Nombre">
+            <input type="text" name="empresa" placeholder="Empresa" required aria-label="Empresa">
+          </div>
+          <input type="email" name="email" placeholder="Email corporativo" required aria-label="Email corporativo">
+          <select name="interes" aria-label="Interés principal">
+            <option value="">¿Qué quieres resolver primero?</option>
+            <option>Automatizar operación</option>
+            <option>Producción de contenido</option>
+            <option>Atención a clientes 24/7</option>
+            <option>Análisis de datos / BI</option>
+            <option>Otro</option>
+          </select>
+          <textarea name="mensaje" placeholder="Cuéntanos tu caso en 2 líneas (opcional)" aria-label="Mensaje"></textarea>
+          <button class="btn primary" type="submit">Quiero mi demo gratis (24h) →</button>
+        </form>
+        <p class="c-note">Sin tarjeta. Sin llamadas de venta agresivas. Solo tu caso corriendo en el harness.</p>
+      </div>
+      <div class="c-side">
+        <h3>Qué pasa después de enviar</h3>
+        <p>El proceso completo toma menos de un día hábil:</p>
+        <div class="c-steps">
+          <div><b>Hoy</b> — Recibes acceso y configuramos tu environment con tu contexto.</div>
+          <div><b>Hora 2</b> — El harness corre tu primer caso de uso real.</div>
+          <div><b>Hora 24</b> — Revisas resultados verificados y decides si escalar.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="/" aria-label="Victor IA">
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="45" height="45" stroke="#FFF" stroke-width="2"/>
+            <path d="M10 12 L19 36 L28 12" stroke="#FFF" stroke-width="2.5" stroke-linecap="square"/>
+            <line x1="36" y1="12" x2="36" y2="36" stroke="#00E5C0" stroke-width="2.5"/>
+          </svg>
+          VICTOR&nbsp;IA
+        </a>
+        <p>Harness Engineering y modern engineering para empresas que toman la IA en serio. Hecho en México.</p>
+      </div>
+      <nav class="foot-links" aria-label="Enlaces del pie">
+        <a href="/blog/">Blog</a>
+        <a href="#documentacion">Docs</a>
+        <a href="#seguridad">Seguridad</a>
+        <a href="#precios">Precios</a>
+        <a href="/aviso-privacidad.html">Aviso de privacidad</a>
+      </nav>
+      <div class="foot-news">
+        <h3>Trends &amp; tips de IA en México</h3>
+        <p>Un correo al mes. Cero spam, puro criterio.</p>
+        <form class="news-form" action="mailto:hola@victor-ia.com.mx" method="post" enctype="text/plain">
+          <input type="email" name="newsletter" placeholder="tu@empresa.com" required aria-label="Email para newsletter">
+          <button type="submit">SUSCRIBIR</button>
+        </form>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 Victor IA. Todos los derechos reservados.</span>
+      <span>Harness Engineer · Modern Engineering · México</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Reveal on scroll
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+// Mobile menu
+const burger=document.getElementById('burger'),links=document.getElementById('navLinks');
+burger.addEventListener('click',()=>links.classList.toggle('open'));
+links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
+</script>
+</body>
+</html>

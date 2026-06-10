@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Victor IA — Dashboard de orquestación inteligente">
+<title>Victor IA — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0C; --surface:#121216; --surface2:#1A1A20;
+    --border:rgba(255,255,255,.07); --border-hi:rgba(201,168,108,.35);
+    --text:#F2F2F0; --text2:#8A8A93; --text3:#55555E;
+    --accent:#C9A86C; --accent-soft:rgba(201,168,108,.12);
+    --green:#5FBF8A; --green-soft:rgba(95,191,138,.12);
+    --red:#E0635C; --red-soft:rgba(224,99,92,.12);
+    --blue:#6C9BC9; --blue-soft:rgba(108,155,201,.12);
+    --radius:14px; --radius-sm:9px;
+    --serif:'Instrument Serif',Georgia,serif;
+    --sans:'Inter',-apple-system,sans-serif;
+    --t:.25s cubic-bezier(.4,0,.2,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;overflow-x:hidden}
+  button{font-family:var(--sans);cursor:pointer;border:none;background:none;color:inherit}
+  ::selection{background:var(--accent-soft);color:var(--accent)}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:4px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ============ LAYOUT ============ */
+  .app{display:flex;min-height:100vh}
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:60;
+    transition:transform var(--t)}
+  .brand{display:flex;align-items:center;gap:12px;padding:22px 20px;border-bottom:1px solid var(--border)}
+  .brand-mark{width:36px;height:36px;border:1px solid var(--border-hi);border-radius:10px;
+    display:grid;place-items:center;flex-shrink:0}
+  .brand-name{font-family:var(--serif);font-size:1.25rem;letter-spacing:.01em}
+  .brand-name em{color:var(--accent);font-style:italic}
+  .nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-sm);
+    color:var(--text2);text-decoration:none;font-size:.9rem;font-weight:500;
+    transition:all var(--t);border:1px solid transparent;width:100%;text-align:left}
+  .nav-item svg{flex-shrink:0;opacity:.8}
+  .nav-item:hover{color:var(--text);background:var(--surface2)}
+  .nav-item.active{color:var(--accent);background:var(--accent-soft);border-color:var(--border-hi)}
+  .sidebar-foot{padding:16px 20px;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3)}
+  .sidebar-foot .user-email{color:var(--text2);font-weight:500;display:block;margin-bottom:8px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .logout-btn{color:var(--text3);font-size:.78rem;display:flex;align-items:center;gap:6px;
+    transition:color var(--t);padding:0}
+  .logout-btn:hover{color:var(--red)}
+
+  /* ============ MAIN ============ */
+  .main{flex:1;margin-left:240px;padding:0 36px 110px;min-width:0}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:26px 0 8px}
+  .menu-toggle{display:none;width:40px;height:40px;border:1px solid var(--border);
+    border-radius:var(--radius-sm);place-items:center;color:var(--text2)}
+  .page-title{font-family:var(--serif);font-size:2rem;font-weight:400;letter-spacing:-.01em}
+  .page-sub{color:var(--text2);font-size:.88rem;margin-top:2px}
+  .live-pill{display:flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--border);
+    border-radius:99px;font-size:.78rem;color:var(--text2);background:var(--surface)}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 0 0 rgba(95,191,138,.5);animation:pulse 2.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(95,191,138,.45)}70%{box-shadow:0 0 0 8px rgba(95,191,138,0)}100%{box-shadow:0 0 0 0 rgba(95,191,138,0)}}
+
+  /* ============ GRID + WIDGETS ============ */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:22px}
+  .widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px;display:flex;flex-direction:column;min-width:0;
+    transition:border-color var(--t),transform var(--t);
+    animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+  .widget:hover{border-color:var(--border-hi)}
+  .widget:nth-child(1){animation-delay:.05s}.widget:nth-child(2){animation-delay:.12s}
+  .widget:nth-child(3){animation-delay:.19s}.widget:nth-child(4){animation-delay:.26s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .w-orq{grid-column:span 7}
+  .w-tokens{grid-column:span 5}
+  .w-proj{grid-column:span 7}
+  .w-radar{grid-column:span 5}
+  .widget-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .widget-title{font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+  .widget-icon{width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius-sm);
+    display:grid;place-items:center;color:var(--accent);flex-shrink:0}
+  .kpi{font-family:var(--serif);font-size:3.1rem;line-height:1;letter-spacing:-.01em}
+  .kpi small{font-size:1.4rem;color:var(--text2)}
+  .delta{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:600;
+    padding:3px 9px;border-radius:99px}
+  .delta.up{color:var(--green);background:var(--green-soft)}
+  .delta.down{color:var(--red);background:var(--red-soft)}
+  .widget-meta{color:var(--text3);font-size:.78rem;margin-top:6px}
+  canvas{display:block;width:100%}
+
+  /* gauge */
+  .gauge-wrap{position:relative;display:grid;place-items:center;margin:4px auto 0;max-width:240px}
+  .gauge-center{position:absolute;text-align:center}
+  .gauge-center .kpi{font-size:2.3rem}
+  .gauge-center .gauge-sub{font-size:.75rem;color:var(--text2);margin-top:4px}
+  .gauge-cost{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;
+    padding-top:14px;border-top:1px solid var(--border)}
+  .gauge-cost b{font-family:var(--serif);font-size:1.45rem;font-weight:400;color:var(--accent)}
+  .gauge-cost span{font-size:.78rem;color:var(--text2)}
+
+  /* table */
+  .mini-table{width:100%;border-collapse:collapse;font-size:.86rem}
+  .mini-table th{text-align:left;font-size:.7rem;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--text3);padding:8px 10px;border-bottom:1px solid var(--border)}
+  .mini-table td{padding:11px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+  .mini-table tr:last-child td{border-bottom:none}
+  .mini-table tr{transition:background var(--t)}
+  .mini-table tbody tr:hover{background:var(--surface2)}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;
+    padding:3px 10px;border-radius:99px;white-space:nowrap}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .badge.curso{color:var(--blue);background:var(--blue-soft)}
+  .badge.revision{color:var(--accent);background:var(--accent-soft)}
+  .badge.bloqueado{color:var(--red);background:var(--red-soft)}
+  .badge.listo{color:var(--green);background:var(--green-soft)}
+  .prog{display:flex;align-items:center;gap:8px;min-width:110px}
+  .prog-bar{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+  .prog-fill{height:100%;background:var(--accent);border-radius:2px;width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+  .prog span{font-size:.72rem;color:var(--text2);min-width:30px;text-align:right}
+
+  /* radar legend */
+  .radar-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;justify-content:center}
+  .radar-legend span{font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:6px}
+  .radar-legend i{width:8px;height:8px;border-radius:2px;background:var(--accent);font-style:normal}
+
+  /* ============ CHAT VICTOR ============ */
+  .chat-fab{position:fixed;right:26px;bottom:26px;z-index:80;width:58px;height:58px;
+    border-radius:50%;background:var(--accent);color:#0A0A0C;display:grid;place-items:center;
+    box-shadow:0 8px 30px rgba(201,168,108,.35);transition:transform var(--t),box-shadow var(--t)}
+  .chat-fab:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 14px 40px rgba(201,168,108,.45)}
+  .chat-fab .ic-close{display:none}
+  .chat-fab.open .ic-chat{display:none}
+  .chat-fab.open .ic-close{display:block}
+  .chat-panel{position:fixed;right:26px;bottom:98px;z-index:79;width:380px;max-width:calc(100vw - 32px);
+    height:520px;max-height:calc(100vh - 130px);background:var(--surface);
+    border:1px solid var(--border-hi);border-radius:18px;display:flex;flex-direction:column;
+    overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.6);
+    opacity:0;pointer-events:none;transform:translateY(16px) scale(.97);
+    transition:opacity var(--t),transform var(--t)}
+  .chat-panel.open{opacity:1;pointer-events:auto;transform:none}
+  .chat-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);
+    background:var(--surface2)}
+  .chat-avatar{width:38px;height:38px;border-radius:50%;border:1px solid var(--border-hi);
+    display:grid;place-items:center;color:var(--accent);flex-shrink:0}
+  .chat-head-info{flex:1;min-width:0}
+  .chat-head-info b{font-size:.92rem;font-weight:600;display:block}
+  .chat-status{font-size:.72rem;color:var(--green);display:flex;align-items:center;gap:6px}
+  .chat-status::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
+  .chat-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:82%;padding:10px 14px;border-radius:14px;font-size:.875rem;line-height:1.45;
+    animation:msgIn .3s cubic-bezier(.22,1,.36,1) both;word-wrap:break-word}
+  @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .msg.victor{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);
+    border-bottom-left-radius:4px}
+  .msg.user{align-self:flex-end;background:var(--accent);color:#141008;border-bottom-right-radius:4px;font-weight:500}
+  .msg-time{font-size:.62rem;color:var(--text3);margin-top:4px;display:block}
+  .msg.user .msg-time{color:rgba(20,16,8,.55)}
+  .typing{align-self:flex-start;display:flex;gap:4px;padding:12px 16px;background:var(--surface2);
+    border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:4px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--text2);animation:tdot 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes tdot{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+  .chat-input-row{display:flex;align-items:center;gap:8px;padding:12px;border-top:1px solid var(--border);
+    background:var(--surface2)}
+  .chat-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:99px;
+    padding:10px 16px;color:var(--text);font-family:var(--sans);font-size:.875rem;outline:none;
+    transition:border-color var(--t);min-width:0}
+  .chat-input:focus{border-color:var(--border-hi)}
+  .chat-input::placeholder{color:var(--text3)}
+  .chat-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;
+    border:1px solid var(--border);color:var(--text2);transition:all var(--t)}
+  .chat-btn:hover{color:var(--accent);border-color:var(--border-hi)}
+  .chat-btn.send{background:var(--accent);color:#0A0A0C;border-color:var(--accent)}
+  .chat-btn.send:hover{transform:scale(1.06)}
+  .chat-btn.mic.rec{color:var(--red);border-color:var(--red);animation:pulse 1.4s infinite}
+
+  /* ============ AUTH OVERLAY ============ */
+  .auth-overlay{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:20px}
+  .auth-overlay.hidden{display:none}
+  .auth-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);
+    border-radius:18px;padding:38px 34px;text-align:center;animation:rise .5s both}
+  .auth-card .brand-mark{margin:0 auto 18px;width:52px;height:52px;border-radius:14px}
+  .auth-card h1{font-family:var(--serif);font-size:1.7rem;font-weight:400;margin-bottom:6px}
+  .auth-card h1 em{color:var(--accent);font-style:italic}
+  .auth-card p{color:var(--text2);font-size:.85rem;margin-bottom:24px}
+  .auth-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:13px 16px;color:var(--text);font-family:var(--sans);font-size:.9rem;outline:none;
+    margin-bottom:12px;transition:border-color var(--t)}
+  .auth-input:focus{border-color:var(--border-hi)}
+  .auth-btn{width:100%;background:var(--accent);color:#0A0A0C;font-weight:600;font-size:.9rem;
+    padding:13px;border-radius:var(--radius-sm);transition:all var(--t)}
+  .auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,108,.3)}
+  .auth-err{color:var(--red);font-size:.78rem;margin-top:10px;min-height:18px}
+
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55;opacity:0;
+    pointer-events:none;transition:opacity var(--t)}
+  .scrim.show{opacity:1;pointer-events:auto}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1100px){
+    .w-orq,.w-tokens,.w-proj,.w-radar{grid-column:span 12}
+  }
+  @media (max-width:900px){
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.open{transform:none}
+    .main{margin-left:0;padding:0 18px 110px}
+    .menu-toggle{display:grid}
+    .page-title{font-size:1.55rem}
+    .live-pill span.lbl{display:none}
+  }
+  @media (max-width:520px){
+    .chat-panel{right:8px;bottom:88px;height:70vh}
+    .chat-fab{right:16px;bottom:16px}
+    .kpi{font-size:2.4rem}
+    .mini-table th:nth-child(4),.mini-table td:nth-child(4){display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH ============ -->
+<div class="auth-overlay" id="authOverlay" aria-modal="true" role="dialog">
+  <div class="auth-card">
+    <div class="brand-mark" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C9A86C" stroke-width="1.6" stroke-linecap="round"><path d="M4 5l5 14 3-8"/><path d="M17 5v14"/><path d="M14.5 5h5"/></svg>
+    </div>
+    <h1>Victor <em>IA</em></h1>
+    <p>Accede a tu centro de orquestación inteligente.</p>
+    <form id="authForm">
+      <input type="email" class="auth-input" id="authEmail" placeholder="tu@correo.com" autocomplete="email" required>
+      <button type="submit" class="auth-btn">Entrar al Dashboard</button>
+      <div class="auth-err" id="authErr"></div>
+    </form>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A86C" stroke-width="1.6" stroke-linecap="round"><path d="M4 5l5 14 3-8"/><path d="M17 5v14"/><path d="M14.5 5h5"/></svg>
+      </div>
+      <div class="brand-name">Victor <em>IA</em></div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item active" href="#home">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 001 1h12a1 1 0 001-1v-9"/><path d="M10 20v-5h4v5"/></svg>
+        Home
+      </a>
+      <a class="nav-item" href="#chat" id="navChat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-8 8H4l2.5-2.5A8 8 0 1121 12z"/><path d="M9 11h6M9 14h3"/></svg>
+        Chat
+      </a>
+      <a class="nav-item" href="#analytics">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>
+        Analytics
+      </a>
+      <a class="nav-item" href="#crm">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.7 5.5-4.7s4.9 1.7 5.5 4.7"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.6c2.4.2 4 1.6 4.5 4.1"/></svg>
+        CRM
+      </a>
+      <a class="nav-item" href="#tracker">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2.5"/></svg>
+        Tracker
+      </a>
+      <a class="nav-item" href="#docs">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>
+        Docs
+      </a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="user-email" id="sideEmail">—</span>
+      <button class="logout-btn" id="logoutBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div>
+          <h1 class="page-title">Centro de Comando</h1>
+          <p class="page-sub" id="greeting">Tu operación IA en tiempo real</p>
+        </div>
+      </div>
+      <div class="live-pill"><span class="live-dot" aria-hidden="true"></span><span class="lbl">Sistema operativo ·</span>&nbsp;<span id="clock">—</span></div>
+    </div>
+
+    <div class="grid">
+
+      <!-- WIDGET 1 — ORQUESTACIONES ACTIVAS -->
+      <section class="widget w-orq" aria-label="Orquestaciones activas">
+        <div class="widget-head">
+          <div>
+            <div class="widget-title">Orquestaciones Activas</div>
+            <div style="display:flex;align-items:baseline;gap:14px;margin-top:10px">
+              <span class="kpi" id="orqCount">0</span>
+              <span class="delta up" id="orqDelta">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+                +18% vs ayer
+              </span>
+            </div>
+          </div>
+          <div class="widget-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M12 7.2v4M10.8 11.5L6.2 16M13.2 11.5l4.6 4.5"/></svg>
+          </div>
+        </div>
+        <canvas id="lineChart" height="170" role="img" aria-label="Gráfico de línea: orquestaciones últimas 24 horas"></canvas>
+        <div class="widget-meta">Últimas 24 horas · actualización en vivo cada 2.5s</div>
+      </section>
+
+      <!-- WIDGET 2 — TOKENS CONSUMIDOS HOY -->
+      <section class="widget w-tokens" aria-label="Tokens consumidos hoy">
+        <div class="widget-head">
+          <div class="widget-title">Tokens Consumidos Hoy</div>
+          <div class="widget-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.5v11M15 9.2c-.6-1-1.7-1.5-3-1.5-1.8 0-3 1-3 2.3 0 2.8 6 1.6 6 4.4 0 1.3-1.2 2.3-3 2.3-1.3 0-2.4-.5-3-1.5"/></svg>
+          </div>
+        </div>
+        <div class="gauge-wrap">
+          <canvas id="gaugeChart" width="240" height="240" role="img" aria-label="Gauge circular de consumo de tokens"></canvas>
+          <div class="gauge-center">
+            <div class="kpi" id="tokenCount">0</div>
+            <div class="gauge-sub">de 2.5M presupuesto diario</div>
+          </div>
+        </div>
+        <div class="gauge-cost">
+          <span>Costo estimado hoy</span>
+          <b id="tokenCost">$0.00 USD</b>
+        </div>
+      </section>
+
+      <!-- WIDGET 3 — PROYECTOS POR COMPLETAR -->
+      <section class="widget w-proj" aria-label="Proyectos por completar">
+        <div class="widget-head">
+          <div class="widget-title">Proyectos por Completar</div>
+          <div class="widget-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5.5"/></svg>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="mini-table">
+            <thead>
+              <tr><th>Proyecto</th><th>Estado</th><th>Avance</th><th>Entrega</th></tr>
+            </thead>
+            <tbody id="projBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WIDGET 4 — TU FORTALEZA IA -->
+      <section class="widget w-radar" aria-label="Tu fortaleza IA">
+        <div class="widget-head">
+          <div class="widget-title">Tu Fortaleza IA</div>
+          <div class="widget-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.6v8.8L12 21l-8-4.6V7.6z"/><path d="M12 8.2l4.2 2.4v4.8L12 17.8l-4.2-2.4v-4.8z"/></svg>
+          </div>
+        </div>
+        <canvas id="radarChart" height="250" role="img" aria-label="Radar de capacidades IA"></canvas>
+        <div class="radar-legend">
+          <span><i></i>Nivel actual</span>
+          <span><i style="background:var(--text3)"></i>Promedio del mercado</span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ============ CHAT VICTOR FLOTANTE ============ -->
+<div class="chat-panel" id="chatPanel" role="dialog" aria-label="Chat con Victor IA">
+  <div class="chat-head">
+    <div class="chat-avatar" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 5l5 14 3-8"/><path d="M17 5v14"/><path d="M14.5 5h5"/></svg>
+    </div>
+    <div class="chat-head-info">
+      <b>Victor</b>
+      <span class="chat-status">En línea · voz activa</span>
+    </div>
+    <button class="chat-btn" id="ttsToggle" title="Activar/desactivar voz" aria-label="Alternar voz">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6.5 9H3v6h3.5L11 19z"/><path d="M15 9.5a4 4 0 010 5M17.5 7a7.5 7.5 0 010 10"/></svg>
+    </button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs" aria-live="polite"></div>
+  <form class="chat-input-row" id="chatForm">
+    <button type="button" class="chat-btn mic" id="micBtn" title="Hablar con Victor" aria-label="Dictar por voz">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21M9 21h6"/></svg>
+    </button>
+    <input class="chat-input" id="chatInput" placeholder="Pregúntale a Victor…" autocomplete="off">
+    <button type="submit" class="chat-btn send" aria-label="Enviar mensaje">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></svg>
+    </button>
+  </form>
+</div>
+<button class="chat-fab" id="chatFab" aria-label="Abrir chat con Victor">
+  <svg class="ic-chat" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-8 8H4l2.5-2.5A8 8 0 1121 12z"/><path d="M8.8 12h.01M12 12h.01M15.2 12h.01"/></svg>
+  <svg class="ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+</button>
+
+<script>
+"use strict";
+/* ================================================================
+   VICTOR IA — DASHBOARD v1 (Sprint 2)
+   Vanilla JS · Canvas puro · WebSocket mock · ElevenLabs + OpenRouter
+================================================================ */
+
+const CONFIG = {
+  // SEGURIDAD (Sprint 6): cero API keys en el HTML. La config llega del
+  // backend via GET /api/config (keys ofuscadas + IDs públicos). Si el
+  // backend no responde, el chat/TTS usan el mock demo o speechSynthesis.
+  ELEVENLABS_API_KEY: "",            // ← NUNCA hardcodear. Proxy del backend.
+  ELEVENLABS_VOICE_ID: "",           // ← se carga desde /api/config
+  OPENROUTER_API_KEY: "",            // ← si está vacío, el chat usa el mock demo
+  OPENROUTER_MODEL: "anthropic/claude-3.5-haiku",
+  TOKEN_BUDGET: 2500000,             // presupuesto diario de tokens
+  COST_PER_M: 4.20                   // USD por millón de tokens (blend)
+};
+
+/* Carga config segura del backend (no bloquea el boot del dashboard) */
+(async function loadRemoteConfig(){
+  try {
+    const res = await fetch("/api/config", {
+      headers: { "X-Session-Token": localStorage.getItem("session_token") || "" }
+    });
+    if (!res.ok) return; // sin backend → modo demo
+    const cfg = await res.json();
+    if (cfg.providers && cfg.providers.elevenlabs) {
+      CONFIG.ELEVENLABS_VOICE_ID = cfg.providers.elevenlabs.voice_id || "";
+      CONFIG.ELEVENLABS_AGENT_ID = cfg.providers.elevenlabs.agent_id || "";
+    }
+  } catch (e) { /* offline/demo: fallback a speechSynthesis */ }
+})();
+
+/* ============ AUTH BÁSICA (localStorage) ============ */
+const Auth = {
+  get email(){ return localStorage.getItem("user_email"); },
+  get token(){ return localStorage.getItem("session_token"); },
+  login(email){
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    const token = "vi_" + Array.from(bytes, b => b.toString(16).padStart(2,"0")).join("");
+    localStorage.setItem("user_email", email);
+    localStorage.setItem("session_token", token);
+  },
+  logout(){
+    localStorage.removeItem("user_email");
+    localStorage.removeItem("session_token");
+    location.reload();
+  },
+  isValid(){ return !!(this.email && this.token && this.token.startsWith("vi_")); }
+};
+
+const authOverlay = document.getElementById("authOverlay");
+document.getElementById("authForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const email = document.getElementById("authEmail").value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    document.getElementById("authErr").textContent = "Ingresa un correo válido.";
+    return;
+  }
+  Auth.login(email);
+  bootApp();
+});
+
+function bootApp(){
+  authOverlay.classList.add("hidden");
+  document.getElementById("sideEmail").textContent = Auth.email;
+  const h = new Date().getHours();
+  const saludo = h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches";
+  document.getElementById("greeting").textContent =
+    saludo + ", " + Auth.email.split("@")[0] + " — tu operación IA en tiempo real";
+  Dashboard.init();
+}
+
+document.getElementById("logoutBtn").addEventListener("click", () => Auth.logout());
+
+/* ============ SIDEBAR MÓVIL ============ */
+const sidebar = document.getElementById("sidebar");
+const scrim = document.getElementById("scrim");
+document.getElementById("menuToggle").addEventListener("click", () => {
+  sidebar.classList.add("open"); scrim.classList.add("show");
+});
+scrim.addEventListener("click", () => {
+  sidebar.classList.remove("open"); scrim.classList.remove("show");
+});
+document.querySelectorAll(".nav-item").forEach(a => {
+  a.addEventListener("click", e => {
+    document.querySelectorAll(".nav-item").forEach(x => x.classList.remove("active"));
+    a.classList.add("active");
+    sidebar.classList.remove("open"); scrim.classList.remove("show");
+    if(a.id === "navChat"){ e.preventDefault(); Chat.open(); }
+  });
+});
+
+/* ============ RELOJ ============ */
+setInterval(() => {
+  document.getElementById("clock").textContent =
+    new Date().toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+}, 1000);
+
+/* ============ CANVAS HELPERS ============ */
+function setupCanvas(canvas){
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const h = parseInt(canvas.getAttribute("height")) || rect.height;
+  canvas.width = rect.width * dpr;
+  canvas.height = h * dpr;
+  canvas.style.height = h + "px";
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: rect.width, h };
+}
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+/* ============ DASHBOARD ============ */
+const Dashboard = {
+  started: false,
+  init(){
+    if(this.started) return;
+    this.started = true;
+    LineChart.init();
+    Gauge.init();
+    Projects.render();
+    Radar.init();
+    this.animateOrqCount();
+    window.addEventListener("resize", () => {
+      clearTimeout(this._rz);
+      this._rz = setTimeout(() => { LineChart.draw(1); Radar.draw(1); }, 150);
+    });
+  },
+  animateOrqCount(){
+    const el = document.getElementById("orqCount");
+    const target = LineChart.data[LineChart.data.length - 1];
+    const t0 = performance.now();
+    (function tick(now){
+      const p = Math.min((now - t0) / 1200, 1);
+      el.textContent = Math.round(target * easeOut(p));
+      if(p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+};
+
+/* ---- WIDGET 1: LINE CHART (orquestaciones, 24h, vivo) ---- */
+const LineChart = {
+  data: [],
+  init(){
+    // 24 puntos horarios con curva orgánica
+    let v = 9;
+    for(let i = 0; i < 24; i++){
+      v = Math.max(3, Math.min(34, v + (Math.random() * 8 - 3.4) + (i > 7 && i < 19 ? 1.1 : -0.8)));
+      this.data.push(Math.round(v));
+    }
+    this.animateIn();
+    setInterval(() => this.liveTick(), 2500);
+  },
+  animateIn(){
+    const t0 = performance.now();
+    const tick = now => {
+      const p = Math.min((now - t0) / 1400, 1);
+      this.draw(easeOut(p));
+      if(p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  },
+  liveTick(){
+    const last = this.data[this.data.length - 1];
+    const next = Math.max(3, Math.min(34, last + Math.round(Math.random() * 7 - 3)));
+    this.data.push(next); this.data.shift();
+    document.getElementById("orqCount").textContent = next;
+    const deltaEl = document.getElementById("orqDelta");
+    const diff = next - last;
+    deltaEl.className = "delta " + (diff >= 0 ? "up" : "down");
+    deltaEl.lastChild.textContent = " " + (diff >= 0 ? "+" : "") + diff + " este ciclo";
+    this.draw(1);
+  },
+  draw(progress){
+    const c = document.getElementById("lineChart");
+    const { ctx, w, h } = setupCanvas(c);
+    const pad = { l: 28, r: 10, t: 14, b: 22 };
+    const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+    const max = 36, n = this.data.length;
+    ctx.clearRect(0, 0, w, h);
+
+    // grid horizontal
+    ctx.strokeStyle = "rgba(255,255,255,.05)";
+    ctx.fillStyle = "#55555E";
+    ctx.font = "10px Inter";
+    ctx.textAlign = "right";
+    [0, 12, 24, 36].forEach(val => {
+      const y = pad.t + ih - (val / max) * ih;
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+      ctx.fillText(val, pad.l - 7, y + 3);
+    });
+
+    const px = i => pad.l + (i / (n - 1)) * iw;
+    const py = v => pad.t + ih - (v / max) * ih;
+    const shown = Math.max(2, Math.floor(n * progress));
+
+    // área con gradiente
+    const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + ih);
+    grad.addColorStop(0, "rgba(201,168,108,.28)");
+    grad.addColorStop(1, "rgba(201,168,108,0)");
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(this.data[0]));
+    for(let i = 1; i < shown; i++){
+      const xc = (px(i - 1) + px(i)) / 2;
+      ctx.bezierCurveTo(xc, py(this.data[i-1]), xc, py(this.data[i]), px(i), py(this.data[i]));
+    }
+    ctx.lineTo(px(shown - 1), pad.t + ih);
+    ctx.lineTo(px(0), pad.t + ih);
+    ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+
+    // línea
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(this.data[0]));
+    for(let i = 1; i < shown; i++){
+      const xc = (px(i - 1) + px(i)) / 2;
+      ctx.bezierCurveTo(xc, py(this.data[i-1]), xc, py(this.data[i]), px(i), py(this.data[i]));
+    }
+    ctx.strokeStyle = "#C9A86C"; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
+
+    // punto final pulsante
+    if(progress >= 1){
+      const lx = px(n - 1), ly = py(this.data[n - 1]);
+      ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#C9A86C"; ctx.fill();
+      ctx.beginPath(); ctx.arc(lx, ly, 8, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(201,168,108,.35)"; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    // etiquetas X
+    ctx.textAlign = "center"; ctx.fillStyle = "#55555E";
+    const nowH = new Date().getHours();
+    [0, 6, 12, 18, 23].forEach(i => {
+      const hr = (nowH - (23 - i) + 24) % 24;
+      ctx.fillText(String(hr).padStart(2,"0") + "h", px(i), h - 6);
+    });
+  }
+};
+
+/* ---- WIDGET 2: GAUGE CIRCULAR (tokens + costo) ---- */
+const Gauge = {
+  target: 1840000,
+  init(){
+    const t0 = performance.now();
+    const tick = now => {
+      const p = easeOut(Math.min((now - t0) / 1600, 1));
+      this.draw(p);
+      const tokens = Math.round(this.target * p);
+      document.getElementById("tokenCount").textContent =
+        tokens >= 1e6 ? (tokens / 1e6).toFixed(2) + "M" : Math.round(tokens / 1e3) + "K";
+      document.getElementById("tokenCost").textContent =
+        "$" + ((tokens / 1e6) * CONFIG.COST_PER_M).toFixed(2) + " USD";
+      if(p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    // drift en vivo
+    setInterval(() => {
+      this.target = Math.min(CONFIG.TOKEN_BUDGET, this.target + Math.round(Math.random() * 9000));
+      this.draw(1);
+      document.getElementById("tokenCount").textContent = (this.target / 1e6).toFixed(2) + "M";
+      document.getElementById("tokenCost").textContent =
+        "$" + ((this.target / 1e6) * CONFIG.COST_PER_M).toFixed(2) + " USD";
+    }, 4000);
+  },
+  draw(progress){
+    const c = document.getElementById("gaugeChart");
+    const dpr = window.devicePixelRatio || 1;
+    const size = 240;
+    c.width = size * dpr; c.height = size * dpr;
+    c.style.width = size + "px"; c.style.height = size + "px";
+    const ctx = c.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size, size);
+    const cx = size / 2, cy = size / 2, r = 96, lw = 13;
+    const start = Math.PI * 0.75, span = Math.PI * 1.5;
+    const ratio = (this.target / CONFIG.TOKEN_BUDGET) * progress;
+
+    // pista
+    ctx.beginPath(); ctx.arc(cx, cy, r, start, start + span);
+    ctx.strokeStyle = "#1A1A20"; ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.stroke();
+
+    // ticks
+    ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1.5;
+    for(let i = 0; i <= 30; i++){
+      const a = start + (i / 30) * span;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * (r - 18), cy + Math.sin(a) * (r - 18));
+      ctx.lineTo(cx + Math.cos(a) * (r - 13), cy + Math.sin(a) * (r - 13));
+      ctx.stroke();
+    }
+
+    // arco de valor con gradiente
+    const grad = ctx.createConicGradient
+      ? (() => { const g = ctx.createConicGradient(start, cx, cy);
+          g.addColorStop(0, "#8a7146"); g.addColorStop(.75, "#C9A86C"); return g; })()
+      : "#C9A86C";
+    ctx.beginPath(); ctx.arc(cx, cy, r, start, start + span * ratio);
+    ctx.strokeStyle = grad; ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.stroke();
+
+    // aguja punto
+    const a = start + span * ratio;
+    ctx.beginPath();
+    ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = "#F2F2F0"; ctx.fill();
+
+    // % label
+    ctx.font = "11px Inter"; ctx.fillStyle = "#8A8A93"; ctx.textAlign = "center";
+    ctx.fillText(Math.round(ratio * 100) + "% del presupuesto", cx, cy + r - 38);
+  }
+};
+
+/* ---- WIDGET 3: TABLA PROYECTOS ---- */
+const Projects = {
+  rows: [
+    { name: "Seabird Hotel — Sitio", status: "curso",     label: "En curso",   pct: 72, due: "13 jun" },
+    { name: "Costa Negra — QR Lotes", status: "revision", label: "Revisión",   pct: 88, due: "11 jun" },
+    { name: "VTC Compliance v2",      status: "curso",     label: "En curso",   pct: 45, due: "18 jun" },
+    { name: "Influence IA Awards",    status: "bloqueado", label: "Bloqueado",  pct: 30, due: "25 jun" },
+    { name: "Brain Tracker Mobile",   status: "listo",     label: "Listo QA",   pct: 96, due: "10 jun" }
+  ],
+  render(){
+    const tb = document.getElementById("projBody");
+    tb.innerHTML = this.rows.map(r => `
+      <tr>
+        <td style="font-weight:500">${r.name}</td>
+        <td><span class="badge ${r.status}">${r.label}</span></td>
+        <td><div class="prog"><div class="prog-bar"><div class="prog-fill" data-pct="${r.pct}"></div></div><span>${r.pct}%</span></div></td>
+        <td style="color:var(--text2)">${r.due}</td>
+      </tr>`).join("");
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        tb.querySelectorAll(".prog-fill").forEach(el => { el.style.width = el.dataset.pct + "%"; });
+      }, 350);
+    });
+  }
+};
+
+/* ---- WIDGET 4: RADAR CHART (fortaleza IA) ---- */
+const Radar = {
+  axes: ["Orquestación", "Automatización", "Video IA", "Voz IA", "Web & UX", "Datos"],
+  values: [0.92, 0.84, 0.88, 0.95, 0.90, 0.71],
+  market: [0.55, 0.60, 0.42, 0.38, 0.65, 0.58],
+  init(){
+    const t0 = performance.now();
+    const tick = now => {
+      const p = easeOut(Math.min((now - t0) / 1500, 1));
+      this.draw(p);
+      if(p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  },
+  draw(progress){
+    const c = document.getElementById("radarChart");
+    const { ctx, w, h } = setupCanvas(c);
+    ctx.clearRect(0, 0, w, h);
+    const cx = w / 2, cy = h / 2 + 4, R = Math.min(w, h) / 2 - 38;
+    const n = this.axes.length;
+    const angle = i => -Math.PI / 2 + (i / n) * Math.PI * 2;
+    const pt = (i, v) => [cx + Math.cos(angle(i)) * R * v, cy + Math.sin(angle(i)) * R * v];
+
+    // anillos
+    ctx.strokeStyle = "rgba(255,255,255,.06)"; ctx.lineWidth = 1;
+    for(let ring = 1; ring <= 4; ring++){
+      ctx.beginPath();
+      for(let i = 0; i <= n; i++){
+        const [x, y] = pt(i % n, ring / 4);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    // radios
+    for(let i = 0; i < n; i++){
+      const [x, y] = pt(i, 1);
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke();
+    }
+
+    // polígono mercado (gris)
+    ctx.beginPath();
+    for(let i = 0; i <= n; i++){
+      const [x, y] = pt(i % n, this.market[i % n] * progress);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(85,85,94,.15)"; ctx.fill();
+    ctx.strokeStyle = "rgba(138,138,147,.5)"; ctx.lineWidth = 1; ctx.setLineDash([4,4]); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // polígono usuario (gold)
+    ctx.beginPath();
+    for(let i = 0; i <= n; i++){
+      const [x, y] = pt(i % n, this.values[i % n] * progress);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(201,168,108,.18)"; ctx.fill();
+    ctx.strokeStyle = "#C9A86C"; ctx.lineWidth = 2; ctx.stroke();
+
+    // vértices
+    for(let i = 0; i < n; i++){
+      const [x, y] = pt(i, this.values[i] * progress);
+      ctx.beginPath(); ctx.arc(x, y, 3.2, 0, Math.PI * 2);
+      ctx.fillStyle = "#C9A86C"; ctx.fill();
+    }
+
+    // etiquetas
+    ctx.font = "10.5px Inter"; ctx.fillStyle = "#8A8A93";
+    for(let i = 0; i < n; i++){
+      const [x, y] = pt(i, 1.18);
+      ctx.textAlign = Math.abs(x - cx) < 12 ? "center" : x > cx ? "left" : "right";
+      ctx.fillText(this.axes[i], x, y + 3);
+    }
+  }
+};
+
+/* ================================================================
+   CHAT VICTOR — WebSocket mock + OpenRouter + ElevenLabs + mic
+================================================================ */
+
+/* Mock WebSocket: misma API que WebSocket real para swap directo */
+class MockVictorSocket {
+  constructor(){
+    this.readyState = 1; // OPEN
+    this.onmessage = null;
+    this._canned = [
+      "Claro. Ahora mismo tienes {orq} orquestaciones corriendo y el consumo va en {tok} tokens — dentro de presupuesto.",
+      "Lo reviso. El proyecto más urgente es Costa Negra (entrega 11 jun, 88%). ¿Quieres que priorice los agentes ahí?",
+      "Tu fortaleza más alta es Voz IA (95%). Donde más puedes crecer es Datos (71%) — puedo armar un plan.",
+      "Hecho. Registré la nota en el tracker y queda ligada a esta sesión.",
+      "El costo de hoy va en {cost}. Si seguimos a este ritmo, cerramos el día ~30% bajo presupuesto.",
+      "Influence IA Awards sigue bloqueado: falta aprobación del cliente en el copy. ¿Le mando recordatorio?"
+    ];
+    this._i = 0;
+  }
+  send(payload){
+    const { text } = JSON.parse(payload);
+    const delay = 700 + Math.random() * 900;
+    setTimeout(() => {
+      let reply = this._route(text) || this._canned[this._i++ % this._canned.length];
+      reply = reply
+        .replace("{orq}", document.getElementById("orqCount").textContent)
+        .replace("{tok}", document.getElementById("tokenCount").textContent)
+        .replace("{cost}", document.getElementById("tokenCost").textContent);
+      if(this.onmessage) this.onmessage({ data: JSON.stringify({ text: reply }) });
+    }, delay);
+  }
+  _route(t){
+    t = t.toLowerCase();
+    if(/hola|buen[oa]s|hey/.test(t)) return "Hola. Soy Victor, tu orquestador. Tengo el dashboard en vivo frente a mí — pregúntame por proyectos, tokens o capacidades.";
+    if(/token|costo|gasto|presupuesto/.test(t)) return "Llevas {tok} tokens hoy ({cost}). El presupuesto diario es 2.5M, así que vamos bien.";
+    if(/proyecto|pendiente|entrega/.test(t)) return "Tienes 5 proyectos abiertos. El más próximo: Brain Tracker Mobile (10 jun, 96% — listo para QA). El bloqueado: Influence IA Awards.";
+    if(/orquestaci|agente|activo/.test(t)) return "Hay {orq} orquestaciones activas en este momento. El pico del día fue hace unas horas — todo estable.";
+    if(/fortaleza|capacidad|radar|skill/.test(t)) return "Tu radar: Voz IA 95%, Orquestación 92%, Web & UX 90%, Video IA 88%, Automatización 84%, Datos 71%. Muy por encima del mercado.";
+    if(/gracias/.test(t)) return "Para eso estoy. ¿Algo más antes de que vuelva a monitorear?";
+    return null;
+  }
+  close(){ this.readyState = 3; }
+}
+
+const Chat = {
+  panel: document.getElementById("chatPanel"),
+  fab: document.getElementById("chatFab"),
+  msgs: document.getElementById("chatMsgs"),
+  input: document.getElementById("chatInput"),
+  socket: null,
+  ttsOn: true,
+  history: [],
+  greeted: false,
+
+  init(){
+    this.socket = new MockVictorSocket();
+    this.socket.onmessage = e => {
+      const { text } = JSON.parse(e.data);
+      this.removeTyping();
+      this.addMsg(text, "victor");
+      if(this.ttsOn) TTS.speak(text);
+    };
+    this.fab.addEventListener("click", () => this.toggle());
+    document.getElementById("chatForm").addEventListener("submit", e => {
+      e.preventDefault(); this.sendCurrent();
+    });
+    document.getElementById("ttsToggle").addEventListener("click", e => {
+      this.ttsOn = !this.ttsOn;
+      e.currentTarget.style.color = this.ttsOn ? "" : "var(--text3)";
+      e.currentTarget.style.opacity = this.ttsOn ? "" : ".5";
+    });
+    Mic.init(this);
+  },
+  toggle(){
+    const open = this.panel.classList.toggle("open");
+    this.fab.classList.toggle("open", open);
+    if(open){
+      this.input.focus();
+      if(!this.greeted){
+        this.greeted = true;
+        setTimeout(() => {
+          const name = (Auth.email || "").split("@")[0] || "crack";
+          this.addMsg("Hola " + name + ". Todo corriendo en orden — ¿qué revisamos?", "victor");
+        }, 450);
+      }
+    }
+  },
+  open(){ if(!this.panel.classList.contains("open")) this.toggle(); },
+  addMsg(text, who){
+    const div = document.createElement("div");
+    div.className = "msg " + who;
+    const time = new Date().toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit"});
+    div.innerHTML = escapeHtml(text) + '<span class="msg-time">' + time + "</span>";
+    this.msgs.appendChild(div);
+    this.msgs.scrollTop = this.msgs.scrollHeight;
+    this.history.push({ role: who === "user" ? "user" : "assistant", content: text });
+    if(this.history.length > 16) this.history = this.history.slice(-16);
+  },
+  showTyping(){
+    const t = document.createElement("div");
+    t.className = "typing"; t.id = "typing";
+    t.innerHTML = "<i></i><i></i><i></i>";
+    this.msgs.appendChild(t);
+    this.msgs.scrollTop = this.msgs.scrollHeight;
+  },
+  removeTyping(){
+    const t = document.getElementById("typing");
+    if(t) t.remove();
+  },
+  sendCurrent(){
+    const text = this.input.value.trim();
+    if(!text) return;
+    this.input.value = "";
+    this.addMsg(text, "user");
+    this.showTyping();
+    if(CONFIG.OPENROUTER_API_KEY){
+      this.askOpenRouter(text);
+    } else {
+      this.socket.send(JSON.stringify({ text, token: Auth.token }));
+    }
+  },
+  async askOpenRouter(text){
+    try{
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + CONFIG.OPENROUTER_API_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: CONFIG.OPENROUTER_MODEL,
+          messages: [
+            { role: "system", content: "Eres Victor, orquestador IA de Victor IA. Respondes en español, conciso, directo, tono profesional cercano. Contexto del dashboard: " +
+              document.getElementById("orqCount").textContent + " orquestaciones activas, " +
+              document.getElementById("tokenCount").textContent + " tokens consumidos hoy (" +
+              document.getElementById("tokenCost").textContent + "), 5 proyectos abiertos." },
+            ...this.history
+          ],
+          max_tokens: 300
+        })
+      });
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content || "No pude procesar eso. Intenta de nuevo.";
+      this.removeTyping();
+      this.addMsg(reply, "victor");
+      if(this.ttsOn) TTS.speak(reply);
+    }catch(err){
+      this.removeTyping();
+      this.addMsg("Conexión con el modelo falló — sigo en modo local. " , "victor");
+      this.socket.send(JSON.stringify({ text }));
+    }
+  }
+};
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, m => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[m]));
+}
+
+/* ---- TTS: ElevenLabs con fallback a speechSynthesis ---- */
+const TTS = {
+  audio: null,
+  async speak(text){
+    if(this.audio){ this.audio.pause(); this.audio = null; }
+    try{
+      // Sin key en frontend (Sprint 6): si no hay key/voice, ir directo al fallback nativo
+      if(!CONFIG.ELEVENLABS_API_KEY || !CONFIG.ELEVENLABS_VOICE_ID) throw new Error("EL no-key");
+      const res = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + CONFIG.ELEVENLABS_VOICE_ID, {
+        method: "POST",
+        headers: {
+          "xi-api-key": CONFIG.ELEVENLABS_API_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          text: text.slice(0, 600),
+          model_id: "eleven_multilingual_v2",
+          voice_settings: { stability: 0.5, similarity_boost: 0.8 }
+        })
+      });
+      if(!res.ok) throw new Error("EL " + res.status);
+      const blob = await res.blob();
+      this.audio = new Audio(URL.createObjectURL(blob));
+      this.audio.play().catch(() => {});
+    }catch(err){
+      // fallback nativo
+      try{
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "es-MX"; u.rate = 1.02;
+        speechSynthesis.speak(u);
+      }catch(e){ /* silencio */ }
+    }
+  }
+};
+
+/* ---- MIC: Web Speech API (es-MX) ---- */
+const Mic = {
+  rec: null, active: false,
+  init(chat){
+    const btn = document.getElementById("micBtn");
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){
+      btn.style.opacity = ".35";
+      btn.title = "Dictado no soportado en este navegador";
+      return;
+    }
+    this.rec = new SR();
+    this.rec.lang = "es-MX";
+    this.rec.interimResults = true;
+    this.rec.continuous = false;
+    this.rec.onresult = e => {
+      const txt = Array.from(e.results).map(r => r[0].transcript).join("");
+      chat.input.value = txt;
+      if(e.results[e.results.length - 1].isFinal){
+        this.stop(btn);
+        setTimeout(() => chat.sendCurrent(), 250);
+      }
+    };
+    this.rec.onerror = () => this.stop(btn);
+    this.rec.onend = () => this.stop(btn);
+    btn.addEventListener("click", () => {
+      if(this.active){ this.rec.stop(); this.stop(btn); }
+      else{
+        chat.open();
+        try{ this.rec.start(); this.active = true; btn.classList.add("rec"); }
+        catch(e){ this.stop(btn); }
+      }
+    });
+  },
+  stop(btn){ this.active = false; btn.classList.remove("rec"); }
+};
+
+/* ============ BOOT ============ */
+Chat.init();
+if(Auth.isValid()){
+  bootApp();
+}else{
+  authOverlay.classList.remove("hidden");
+}
+</script>
+</body>
+</html>

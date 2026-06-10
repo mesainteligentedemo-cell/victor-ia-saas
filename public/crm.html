@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Victor IA — CRM &amp; Pipeline</title>
+  <style>
+    /* ─── RESET & TOKENS (mismos del dashboard) ─────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:       #0a0c11;
+      --bg-panel:      #111420;
+      --bg-card:       #161b2e;
+      --bg-card-hover: #1d2340;
+      --border:        #252c45;
+      --border-bright: #2e3859;
+
+      --text-primary:  #eef0f8;
+      --text-secondary:#8b93b8;
+      --text-muted:    #505880;
+
+      --green:   #22d36b;  --green-bg: #0e2a1c;
+      --yellow:  #f5c842;  --yellow-bg:#2a2208;
+      --red:     #ff4d6a;  --red-bg:   #2a0a12;
+      --blue:    #4f8ef7;  --blue-bg:  #0d1a38;
+      --purple:  #a78bfa;  --purple-bg:#1a1030;
+      --cyan:    #22d3ee;  --cyan-bg:  #082730;
+
+      --accent:  #4f8ef7;
+      --radius:  10px;
+      --shadow:  0 4px 24px rgba(0,0,0,.45);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+    .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .icon-sm { width: 13px; height: 13px; }
+    .icon-lg { width: 20px; height: 20px; }
+
+    /* ─── TOPBAR ────────────────────────────────────────────────────── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px; background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
+      gap: 16px; flex-wrap: wrap;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; }
+    .logo span { color: var(--accent); }
+    .topbar-badge {
+      font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px;
+      background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue);
+      letter-spacing: .4px;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .live-dot { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-secondary); }
+    .live-dot::before {
+      content: ''; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.4 } }
+
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 7px 12px; min-width: 220px;
+      color: var(--text-muted); transition: border-color .2s;
+    }
+    .search-box:focus-within { border-color: var(--accent); }
+    .search-box input {
+      background: none; border: none; outline: none; color: var(--text-primary);
+      font: inherit; font-size: 13px; width: 100%;
+    }
+    .search-box input::placeholder { color: var(--text-muted); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font: inherit; font-size: 13px; font-weight: 600;
+      padding: 8px 16px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-primary); cursor: pointer; transition: all .18s;
+    }
+    .btn:hover { background: var(--bg-card-hover); border-color: var(--border-bright); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #3d7be0; border-color: #3d7be0; box-shadow: 0 4px 16px rgba(79,142,247,.35); }
+    .btn-danger { color: var(--red); border-color: var(--red-bg); }
+    .btn-danger:hover { background: var(--red-bg); border-color: var(--red); }
+    .btn-ghost { background: transparent; border-color: transparent; color: var(--text-secondary); padding: 6px 10px; }
+    .btn-ghost:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+    /* ─── LAYOUT ────────────────────────────────────────────────────── */
+    .wrap { max-width: 1480px; margin: 0 auto; padding: 22px 28px 60px; }
+
+    /* KPI strip */
+    .kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 14px; margin-bottom: 22px; }
+    .kpi {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden;
+    }
+    .kpi-label { font-size: 11px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .kpi-value { font-size: 26px; font-weight: 700; letter-spacing: -0.6px; }
+    .kpi-delta { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .kpi-delta.up { color: var(--green); }
+    .kpi-delta.down { color: var(--red); }
+    .kpi svg.spark { position: absolute; right: 12px; bottom: 12px; opacity: .9; }
+
+    /* Tabs */
+    .view-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .tab {
+      display: inline-flex; align-items: center; gap: 8px;
+      font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+      padding: 9px 18px; border-radius: var(--radius);
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary);
+      transition: all .18s;
+    }
+    .tab:hover { color: var(--text-primary); border-color: var(--border-bright); }
+    .tab.active { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+
+    /* ─── REPORTES (desplegable) ────────────────────────────────────── */
+    .reports {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 22px; overflow: hidden;
+    }
+    .reports-head {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; background: none; border: none; cursor: pointer;
+      font: inherit; color: var(--text-primary);
+    }
+    .reports-head:hover { background: var(--bg-card); }
+    .reports-title { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; }
+    .reports-title .icon { color: var(--purple); }
+    .chev { transition: transform .25s; color: var(--text-muted); }
+    .reports.open .chev { transform: rotate(180deg); }
+    .reports-body { display: none; padding: 0 20px 20px; }
+    .reports.open .reports-body { display: block; animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(-6px) } to { opacity:1; transform:none } }
+
+    .reports-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 16px; }
+    .report-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px;
+    }
+    .report-card h4 {
+      font-size: 11px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+    }
+    .big-num { font-size: 30px; font-weight: 700; letter-spacing: -0.8px; }
+    .big-num small { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-left: 6px; }
+
+    .winrate-bar { height: 8px; background: var(--bg-base); border-radius: 4px; margin-top: 12px; overflow: hidden; }
+    .winrate-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 4px; transition: width .6s ease; }
+
+    .stage-times { display: flex; flex-direction: column; gap: 9px; }
+    .stage-time-row { display: grid; grid-template-columns: 110px 1fr 52px; align-items: center; gap: 10px; font-size: 12px; }
+    .stage-time-row .lbl { color: var(--text-secondary); font-weight: 600; }
+    .stage-time-row .bar { height: 7px; background: var(--bg-base); border-radius: 4px; overflow: hidden; }
+    .stage-time-row .bar i { display: block; height: 100%; border-radius: 4px; }
+    .stage-time-row .val { text-align: right; font-weight: 700; color: var(--text-primary); }
+
+    .top-clients { display: flex; flex-direction: column; gap: 10px; }
+    .top-client-row { display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 10px; font-size: 13px; }
+    .top-client-row .rank { font-weight: 700; color: var(--text-muted); font-size: 12px; }
+    .top-client-row .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-client-row .name small { display: block; font-weight: 500; font-size: 11px; color: var(--text-muted); }
+    .top-client-row .amt { font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; }
+
+    .mrr-split { display: flex; gap: 24px; margin-top: 8px; }
+    .mrr-split > div { flex: 1; }
+    .mrr-split .lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: .4px; }
+
+    /* ─── PIPELINE ──────────────────────────────────────────────────── */
+    .pipeline {
+      display: grid; grid-template-columns: repeat(5, minmax(240px, 1fr));
+      gap: 14px; overflow-x: auto; padding-bottom: 8px; align-items: start;
+    }
+    .col {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: var(--radius); min-height: 320px;
+      display: flex; flex-direction: column; transition: border-color .2s, background .2s;
+    }
+    .col.drag-over { border-color: var(--accent); background: var(--blue-bg); }
+    .col-head {
+      padding: 13px 14px 11px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .col-head .stage-name { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
+    .stage-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .col-head .count {
+      font-size: 11px; font-weight: 700; color: var(--text-secondary);
+      background: var(--bg-card); border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 12px;
+    }
+    .col-total { padding: 8px 14px; font-size: 12px; font-weight: 700; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+    .col-cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .col-empty { font-size: 12px; color: var(--text-muted); text-align: center; padding: 24px 8px; border: 1px dashed var(--border); border-radius: var(--radius); }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 13px 14px; cursor: grab;
+      transition: all .18s; position: relative;
+    }
+    .card:hover { background: var(--bg-card-hover); border-color: var(--border-bright); transform: translateY(-2px); box-shadow: var(--shadow); }
+    .card:active { cursor: grabbing; }
+    .card.dragging { opacity: .45; transform: scale(.97); }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+    .card-company { font-size: 13.5px; font-weight: 700; line-height: 1.3; }
+    .card-contact { font-size: 11.5px; color: var(--text-secondary); margin-bottom: 10px; }
+    .card-amount { font-size: 15px; font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--text-muted); margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border); }
+    .card-meta span { display: inline-flex; align-items: center; gap: 5px; }
+    .card-actions { display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
+    .card:hover .card-actions { opacity: 1; }
+    .icon-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      padding: 4px; border-radius: 6px; display: inline-flex; transition: all .15s;
+    }
+    .icon-btn:hover { color: var(--text-primary); background: var(--bg-base); }
+    .icon-btn.danger:hover { color: var(--red); background: var(--red-bg); }
+
+    .avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue);
+      font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
+      letter-spacing: .3px;
+    }
+
+    /* ─── TABLA CLIENTES ────────────────────────────────────────────── */
+    .panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .filters {
+      display: flex; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border);
+      flex-wrap: wrap; align-items: center;
+    }
+    .filters .lbl { font-size: 11px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    select.filter, input.filter {
+      font: inherit; font-size: 12.5px; padding: 7px 10px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-primary); outline: none; cursor: pointer; transition: border-color .2s;
+    }
+    select.filter:focus, input.filter:focus { border-color: var(--accent); }
+    select.filter option { background: var(--bg-panel); }
+
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase;
+      color: var(--text-muted); padding: 11px 16px; border-bottom: 1px solid var(--border);
+      background: var(--bg-card); white-space: nowrap;
+    }
+    tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: middle; }
+    tbody tr { transition: background .15s; }
+    tbody tr:hover { background: var(--bg-card); }
+    tbody tr:last-child td { border-bottom: none; }
+    .td-name { font-weight: 600; }
+    .td-name small { display: block; font-weight: 500; font-size: 11px; color: var(--text-muted); }
+    .td-amount { font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; }
+    .td-muted { color: var(--text-secondary); font-size: 12px; }
+
+    .stage-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+      border: 1px solid; letter-spacing: .3px;
+    }
+
+    .empty-state { padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+    /* ─── MODAL ─────────────────────────────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(5,7,12,.72); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px;
+    }
+    .overlay.open { display: flex; animation: fadeIn .2s ease; }
+    .modal {
+      background: var(--bg-panel); border: 1px solid var(--border-bright);
+      border-radius: 14px; width: 100%; max-width: 480px; box-shadow: var(--shadow);
+      max-height: 92vh; overflow-y: auto;
+    }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+    .modal-head h3 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+    .modal-head h3 .icon { color: var(--accent); }
+    .modal-body { padding: 20px 22px; display: grid; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 11px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--text-muted); }
+    .field input, .field select {
+      font: inherit; font-size: 13.5px; padding: 10px 12px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-primary); outline: none; transition: border-color .2s; width: 100%;
+    }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 22px; border-top: 1px solid var(--border); }
+
+    /* ─── TOAST ─────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 300;
+      background: var(--bg-card); border: 1px solid var(--green);
+      color: var(--text-primary); font-size: 13px; font-weight: 600;
+      padding: 12px 18px; border-radius: var(--radius); box-shadow: var(--shadow);
+      display: flex; align-items: center; gap: 10px;
+      transform: translateY(80px); opacity: 0; transition: all .3s cubic-bezier(.2,.9,.3,1.2);
+      pointer-events: none;
+    }
+    .toast.show { transform: none; opacity: 1; }
+    .toast .icon { color: var(--green); }
+    .toast.warn { border-color: var(--yellow); } .toast.warn .icon { color: var(--yellow); }
+    .toast.err  { border-color: var(--red); }    .toast.err  .icon { color: var(--red); }
+
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn .25s ease; }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────────── */
+    @media (max-width: 1100px) {
+      .pipeline { grid-template-columns: repeat(5, 260px); }
+    }
+    @media (max-width: 720px) {
+      .wrap { padding: 16px 14px 50px; }
+      .topbar { padding: 12px 14px; }
+      .search-box { min-width: 140px; flex: 1; }
+      .kpi-value { font-size: 21px; }
+      .field-row { grid-template-columns: 1fr; }
+      .filters { gap: 8px; }
+      .mrr-split { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── VI ICON LIBRARY (custom, cero emojis) ─────────────────────── -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-pipeline" viewBox="0 0 24 24"><rect x="3" y="4" width="4.5" height="16" rx="1.2"/><rect x="9.75" y="4" width="4.5" height="11" rx="1.2"/><rect x="16.5" y="4" width="4.5" height="7" rx="1.2"/></symbol>
+      <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9.5h18M3 15h18M9.5 9.5V20"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-5 3.5 3L19 6"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M16.5 3.5l4 4L8 20l-5 1 1-5L16.5 3.5z"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6.5 8-6.5s8 2.5 8 6.5"/></symbol>
+      <symbol id="i-money" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11M15 8.8c-.6-1-1.7-1.5-3-1.5-1.7 0-3 .9-3 2.3 0 2.9 6 1.7 6 4.6 0 1.4-1.3 2.3-3 2.3-1.3 0-2.4-.5-3-1.5"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8L3 5z"/></symbol>
+      <symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+      <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol>
+      <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4h10v6a5 5 0 01-10 0V4z"/><path d="M7 6H4a3 3 0 003 4M17 6h3a3 3 0 01-3 4M12 15v3M8.5 21h7M12 18c-1.5 0-2.5 1.2-3.5 3M12 18c1.5 0 2.5 1.2 3.5 3"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+      <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+      <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></symbol>
+      <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 01-.4-9A6 6 0 0118 8.5 4 4 0 0117.5 18H7z"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ─── TOPBAR ────────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo">Victor<span>IA</span></div>
+      <span class="topbar-badge">CRM · PIPELINE</span>
+    </div>
+    <div class="topbar-right">
+      <div class="live-dot">Firestore sync activo</div>
+      <div class="search-box">
+        <svg class="icon icon-sm"><use href="#i-search"/></svg>
+        <input id="globalSearch" type="text" placeholder="Buscar cliente o empresa…" />
+      </div>
+      <button class="btn btn-primary" onclick="CRM.openModal()">
+        <svg class="icon icon-sm"><use href="#i-plus"/></svg>Nuevo cliente
+      </button>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ─── KPI STRIP ──────────────────────────────────────────────── -->
+    <section class="kpi-strip" id="kpiStrip"></section>
+
+    <!-- ─── REPORTES DESPLEGABLE ───────────────────────────────────── -->
+    <section class="reports" id="reportsPanel">
+      <button class="reports-head" onclick="CRM.toggleReports()">
+        <span class="reports-title">
+          <svg class="icon"><use href="#i-chart"/></svg>
+          Reportes — Win rate · Tiempo por etapa · MRR/ARR · Top clientes
+        </span>
+        <svg class="icon chev"><use href="#i-chevron"/></svg>
+      </button>
+      <div class="reports-body">
+        <div class="reports-grid">
+          <div class="report-card">
+            <h4><svg class="icon icon-sm"><use href="#i-target"/></svg>Win rate</h4>
+            <div class="big-num" id="rWinRate">—</div>
+            <div class="winrate-bar"><i id="rWinBar" style="width:0%"></i></div>
+            <p class="td-muted" id="rWinDetail" style="margin-top:10px"></p>
+          </div>
+          <div class="report-card">
+            <h4><svg class="icon icon-sm"><use href="#i-clock"/></svg>Tiempo promedio por etapa</h4>
+            <div class="stage-times" id="rStageTimes"></div>
+          </div>
+          <div class="report-card">
+            <h4><svg class="icon icon-sm"><use href="#i-repeat"/></svg>Ingresos recurrentes</h4>
+            <div class="mrr-split">
+              <div><div class="lbl">MRR</div><div class="big-num" id="rMRR">—</div></div>
+              <div><div class="lbl">ARR</div><div class="big-num" id="rARR">—</div></div>
+            </div>
+            <svg class="spark" id="rMRRSpark" width="100%" height="46" viewBox="0 0 240 46" preserveAspectRatio="none" style="margin-top:14px"></svg>
+          </div>
+          <div class="report-card">
+            <h4><svg class="icon icon-sm"><use href="#i-trophy"/></svg>Top clientes por valor</h4>
+            <div class="top-clients" id="rTopClients"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TABS ───────────────────────────────────────────────────── -->
+    <nav class="view-tabs">
+      <button class="tab active" data-view="pipeline" onclick="CRM.setView('pipeline')">
+        <svg class="icon icon-sm"><use href="#i-pipeline"/></svg>Pipeline
+      </button>
+      <button class="tab" data-view="clients" onclick="CRM.setView('clients')">
+        <svg class="icon icon-sm"><use href="#i-table"/></svg>Clientes
+      </button>
+    </nav>
+
+    <!-- ─── VISTA PIPELINE ─────────────────────────────────────────── -->
+    <section class="view active" id="view-pipeline">
+      <div class="pipeline" id="pipeline"></div>
+    </section>
+
+    <!-- ─── VISTA CLIENTES (TABLA) ─────────────────────────────────── -->
+    <section class="view" id="view-clients">
+      <div class="panel">
+        <div class="filters">
+          <span class="lbl"><svg class="icon icon-sm"><use href="#i-filter"/></svg>Filtros</span>
+          <select class="filter" id="fStage" onchange="CRM.renderTable()">
+            <option value="">Todas las etapas</option>
+          </select>
+          <select class="filter" id="fAmount" onchange="CRM.renderTable()">
+            <option value="">Cualquier monto</option>
+            <option value="0-50000">&lt; $50K</option>
+            <option value="50000-150000">$50K – $150K</option>
+            <option value="150000-300000">$150K – $300K</option>
+            <option value="300000-999999999">&gt; $300K</option>
+          </select>
+          <select class="filter" id="fDate" onchange="CRM.renderTable()">
+            <option value="">Cualquier fecha</option>
+            <option value="7">Últimos 7 días</option>
+            <option value="30">Últimos 30 días</option>
+            <option value="90">Últimos 90 días</option>
+          </select>
+          <button class="btn btn-ghost" onclick="CRM.clearFilters()" style="margin-left:auto">
+            <svg class="icon icon-sm"><use href="#i-close"/></svg>Limpiar
+          </button>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th><th>Empresa</th><th>Monto</th><th>Etapa</th>
+                <th>Última interacción</th><th>Responsable</th><th style="text-align:right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="clientsBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="tableEmpty" style="display:none">Sin resultados con los filtros actuales.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ─── MODAL CRUD ────────────────────────────────────────────────── -->
+  <div class="overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h3><svg class="icon"><use href="#i-user"/></svg><span id="modalTitle">Nuevo cliente</span></h3>
+        <button class="icon-btn" onclick="CRM.closeModal()"><svg class="icon"><use href="#i-close"/></svg></button>
+      </div>
+      <form class="modal-body" id="clientForm" onsubmit="CRM.saveClient(event)">
+        <input type="hidden" id="cId" />
+        <div class="field-row">
+          <div class="field"><label>Nombre contacto</label><input id="cName" required placeholder="Ej. Samir Hadid" /></div>
+          <div class="field"><label>Empresa</label><input id="cCompany" required placeholder="Ej. VTC Group" /></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Monto (MXN)</label><input id="cAmount" type="number" min="0" step="1000" required placeholder="120000" /></div>
+          <div class="field"><label>MRR mensual (MXN)</label><input id="cMrr" type="number" min="0" step="500" value="0" /></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Etapa</label><select id="cStage"></select></div>
+          <div class="field"><label>Responsable</label>
+            <select id="cOwner">
+              <option>Victor IA</option><option>Ana Ruiz</option><option>Luis Mora</option><option>Sofía Leal</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Fecha de entrada</label><input id="cDate" type="date" required /></div>
+        <div class="modal-foot" style="padding:6px 0 0; border:none">
+          <button type="button" class="btn" onclick="CRM.closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <svg class="icon icon-sm"><use href="#i-check"/></svg><span id="saveLabel">Guardar</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── TOAST ─────────────────────────────────────────────────────── -->
+  <div class="toast" id="toast">
+    <svg class="icon"><use href="#i-check"/></svg><span id="toastMsg"></span>
+  </div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════════════
+   FIRESTORE MOCK — misma firma que el SDK real, persiste en memoria
+   y refleja cada write en consola para auditar el sync.
+═══════════════════════════════════════════════════════════════════ */
+const FirestoreMock = (() => {
+  const db = {};
+  const delay = (v) => new Promise(r => setTimeout(() => r(v), 120 + Math.random() * 180));
+  return {
+    collection(name) {
+      db[name] = db[name] || {};
+      return {
+        doc(id) {
+          return {
+            async set(data) {
+              db[name][id] = { ...data, _updatedAt: new Date().toISOString() };
+              console.info(`[Firestore mock] SET ${name}/${id}`, db[name][id]);
+              return delay({ id });
+            },
+            async get() {
+              return delay({ exists: !!db[name][id], data: () => db[name][id] });
+            },
+            async delete() {
+              delete db[name][id];
+              console.info(`[Firestore mock] DELETE ${name}/${id}`);
+              return delay({ id });
+            }
+          };
+        },
+        async get() {
+          return delay({ docs: Object.entries(db[name]).map(([id, d]) => ({ id, data: () => d })) });
+        }
+      };
+    }
+  };
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   ETAPAS DEL PIPELINE
+═══════════════════════════════════════════════════════════════════ */
+const STAGES = [
+  { key: 'prospecto',   label: 'Prospecto',   color: 'var(--cyan)',   bg: 'var(--cyan-bg)'   },
+  { key: 'propuesta',   label: 'Propuesta',   color: 'var(--blue)',   bg: 'var(--blue-bg)'   },
+  { key: 'negociacion', label: 'Negociación', color: 'var(--yellow)', bg: 'var(--yellow-bg)' },
+  { key: 'cierre',      label: 'Cierre',      color: 'var(--purple)', bg: 'var(--purple-bg)' },
+  { key: 'completado',  label: 'Completado',  color: 'var(--green)',  bg: 'var(--green-bg)'  }
+];
+const stageOf = k => STAGES.find(s => s.key === k) || STAGES[0];
+
+/* ═══════════════════════════════════════════════════════════════════
+   SEED DATA — 12 clientes con progresión real (stageHistory con fechas)
+═══════════════════════════════════════════════════════════════════ */
+const SEED = [
+  { id: 'c01', name: 'Samir Hadid',     company: 'VTC Group',               amount: 480000, mrr: 0,     stage: 'propuesta',
+    owner: 'Victor IA', date: '2026-05-18', lastTouch: '2026-06-08',
+    history: [{ s: 'prospecto', d: '2026-05-18' }, { s: 'propuesta', d: '2026-05-27' }] },
+  { id: 'c02', name: 'Aldo Rendón',     company: 'Remi Creative',           amount: 120000, mrr: 0,     stage: 'negociacion',
+    owner: 'Victor IA', date: '2026-04-22', lastTouch: '2026-06-06',
+    history: [{ s: 'prospecto', d: '2026-04-22' }, { s: 'propuesta', d: '2026-05-02' }, { s: 'negociacion', d: '2026-05-21' }] },
+  { id: 'c03', name: 'Jimena Torres',   company: 'Academia Lumen (LMS)',    amount: 95000,  mrr: 4500,  stage: 'propuesta',
+    owner: 'Ana Ruiz',  date: '2026-05-25', lastTouch: '2026-06-05',
+    history: [{ s: 'prospecto', d: '2026-05-25' }, { s: 'propuesta', d: '2026-06-01' }] },
+  { id: 'c04', name: 'Rodrigo Esparza', company: 'ROES & CO Plusvalía',     amount: 260000, mrr: 12000, stage: 'completado',
+    owner: 'Victor IA', date: '2026-02-10', lastTouch: '2026-05-30',
+    history: [{ s: 'prospecto', d: '2026-02-10' }, { s: 'propuesta', d: '2026-02-19' }, { s: 'negociacion', d: '2026-03-08' }, { s: 'cierre', d: '2026-03-26' }, { s: 'completado', d: '2026-04-15' }] },
+  { id: 'c05', name: 'Karen Whitfield', company: 'Seabird Hotel · Hyatt',   amount: 310000, mrr: 0,     stage: 'negociacion',
+    owner: 'Luis Mora', date: '2026-04-05', lastTouch: '2026-06-09',
+    history: [{ s: 'prospecto', d: '2026-04-05' }, { s: 'propuesta', d: '2026-04-18' }, { s: 'negociacion', d: '2026-05-12' }] },
+  { id: 'c06', name: 'Mauricio Vela',   company: 'Costa Negra · Q. Roo',    amount: 185000, mrr: 8000,  stage: 'completado',
+    owner: 'Victor IA', date: '2026-01-20', lastTouch: '2026-05-12',
+    history: [{ s: 'prospecto', d: '2026-01-20' }, { s: 'propuesta', d: '2026-01-29' }, { s: 'negociacion', d: '2026-02-14' }, { s: 'cierre', d: '2026-03-02' }, { s: 'completado', d: '2026-03-20' }] },
+  { id: 'c07', name: 'Lorena Ávila',    company: 'LATIVA Foods',            amount: 75000,  mrr: 0,     stage: 'cierre',
+    owner: 'Sofía Leal', date: '2026-04-28', lastTouch: '2026-06-07',
+    history: [{ s: 'prospecto', d: '2026-04-28' }, { s: 'propuesta', d: '2026-05-06' }, { s: 'negociacion', d: '2026-05-19' }, { s: 'cierre', d: '2026-06-02' }] },
+  { id: 'c08', name: 'Patricia Núñez',  company: 'Influence IA Awards',     amount: 140000, mrr: 6000,  stage: 'completado',
+    owner: 'Ana Ruiz',  date: '2026-02-26', lastTouch: '2026-05-22',
+    history: [{ s: 'prospecto', d: '2026-02-26' }, { s: 'propuesta', d: '2026-03-06' }, { s: 'negociacion', d: '2026-03-24' }, { s: 'cierre', d: '2026-04-10' }, { s: 'completado', d: '2026-04-28' }] },
+  { id: 'c09', name: 'Diego Canul',     company: 'Mayan Tours Cancún',      amount: 60000,  mrr: 0,     stage: 'prospecto',
+    owner: 'Luis Mora', date: '2026-06-03', lastTouch: '2026-06-08',
+    history: [{ s: 'prospecto', d: '2026-06-03' }] },
+  { id: 'c10', name: 'Bruno Galli',     company: 'Grupo Estación Pizza',    amount: 35000,  mrr: 1800,  stage: 'prospecto',
+    owner: 'Sofía Leal', date: '2026-06-06', lastTouch: '2026-06-09',
+    history: [{ s: 'prospecto', d: '2026-06-06' }] },
+  { id: 'c11', name: 'Helena Duarte',   company: 'Kingdom Delphia Ent.',    amount: 210000, mrr: 0,     stage: 'cierre',
+    owner: 'Victor IA', date: '2026-03-15', lastTouch: '2026-06-04',
+    history: [{ s: 'prospecto', d: '2026-03-15' }, { s: 'propuesta', d: '2026-03-27' }, { s: 'negociacion', d: '2026-04-20' }, { s: 'cierre', d: '2026-05-28' }] },
+  { id: 'c12', name: 'Itzel Ramos',     company: 'Playa MX Resorts',        amount: 150000, mrr: 0,     stage: 'propuesta',
+    owner: 'Ana Ruiz',  date: '2026-05-10', lastTouch: '2026-06-02',
+    history: [{ s: 'prospecto', d: '2026-05-10' }, { s: 'propuesta', d: '2026-05-22' }] }
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+   CRM CONTROLLER
+═══════════════════════════════════════════════════════════════════ */
+const CRM = (() => {
+  const LS_KEY = 'vi_crm_clients_v1';
+  let clients = [];
+  let dragId = null;
+
+  /* ── persistencia: localStorage + espejo en Firestore mock ── */
+  function load() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      clients = raw ? JSON.parse(raw) : structuredClone(SEED);
+    } catch { clients = structuredClone(SEED); }
+    if (!raw_ok()) save(false);
+  }
+  function raw_ok() { return !!localStorage.getItem(LS_KEY); }
+  function save(notifyFirestore = true) {
+    localStorage.setItem(LS_KEY, JSON.stringify(clients));
+    if (notifyFirestore) {
+      clients.forEach(c => FirestoreMock.collection('clients').doc(c.id).set(c));
+    }
+  }
+
+  /* ── helpers ── */
+  const fmt = n => '$' + Number(n || 0).toLocaleString('es-MX');
+  const fmtK = n => n >= 1e6 ? '$' + (n / 1e6).toFixed(2) + 'M' : '$' + Math.round(n / 1000) + 'K';
+  const daysBetween = (a, b) => Math.max(0, Math.round((new Date(b) - new Date(a)) / 86400000));
+  const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+  const initials = name => name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+  function toast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.className = 'toast show ' + type;
+    document.getElementById('toastMsg').textContent = msg;
+    clearTimeout(t._h);
+    t._h = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ── KPI strip ── */
+  function renderKPIs() {
+    const open = clients.filter(c => c.stage !== 'completado');
+    const pipelineValue = open.reduce((s, c) => s + c.amount, 0);
+    const wonValue = clients.filter(c => c.stage === 'completado').reduce((s, c) => s + c.amount, 0);
+    const mrr = clients.filter(c => c.stage === 'completado').reduce((s, c) => s + (c.mrr || 0), 0);
+    const avgDeal = clients.length ? Math.round(clients.reduce((s, c) => s + c.amount, 0) / clients.length) : 0;
+
+    const spark = (data, color) => {
+      const max = Math.max(...data), min = Math.min(...data);
+      const pts = data.map((v, i) => `${(i / (data.length - 1)) * 70},${26 - ((v - min) / (max - min || 1)) * 22}`).join(' ');
+      return `<svg class="spark" width="74" height="30" viewBox="0 0 74 30"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+    };
+
+    document.getElementById('kpiStrip').innerHTML = `
+      <div class="kpi">
+        <div class="kpi-label"><svg class="icon icon-sm"><use href="#i-pipeline"/></svg>Pipeline abierto</div>
+        <div class="kpi-value">${fmtK(pipelineValue)}</div>
+        <div class="kpi-delta up"><svg class="icon icon-sm"><use href="#i-arrow-up"/></svg>${open.length} oportunidades</div>
+        ${spark([62, 70, 66, 81, 78, 92, 100], 'var(--blue)')}
+      </div>
+      <div class="kpi">
+        <div class="kpi-label"><svg class="icon icon-sm"><use href="#i-trophy"/></svg>Cerrado (completado)</div>
+        <div class="kpi-value">${fmtK(wonValue)}</div>
+        <div class="kpi-delta up"><svg class="icon icon-sm"><use href="#i-arrow-up"/></svg>${clients.filter(c => c.stage === 'completado').length} proyectos</div>
+        ${spark([20, 32, 30, 48, 55, 68, 74], 'var(--green)')}
+      </div>
+      <div class="kpi">
+        <div class="kpi-label"><svg class="icon icon-sm"><use href="#i-repeat"/></svg>MRR activo</div>
+        <div class="kpi-value">${fmtK(mrr)}</div>
+        <div class="kpi-delta up"><svg class="icon icon-sm"><use href="#i-arrow-up"/></svg>ARR ${fmtK(mrr * 12)}</div>
+        ${spark([10, 14, 14, 19, 24, 26, 32], 'var(--purple)')}
+      </div>
+      <div class="kpi">
+        <div class="kpi-label"><svg class="icon icon-sm"><use href="#i-money"/></svg>Ticket promedio</div>
+        <div class="kpi-value">${fmtK(avgDeal)}</div>
+        <div class="kpi-delta up"><svg class="icon icon-sm"><use href="#i-user"/></svg>${clients.length} clientes en cartera</div>
+        ${spark([40, 38, 45, 50, 47, 56, 60], 'var(--cyan)')}
+      </div>`;
+  }
+
+  /* ── PIPELINE (drag & drop vanilla) ── */
+  function renderPipeline() {
+    const q = document.getElementById('globalSearch').value.trim().toLowerCase();
+    const el = document.getElementById('pipeline');
+    el.innerHTML = STAGES.map(st => {
+      const list = clients
+        .filter(c => c.stage === st.key)
+        .filter(c => !q || c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q))
+        .sort((a, b) => b.amount - a.amount);
+      const total = list.reduce((s, c) => s + c.amount, 0);
+      const cards = list.map(c => `
+        <article class="card" draggable="true" data-id="${c.id}"
+                 ondragstart="CRM.dragStart(event,'${c.id}')" ondragend="CRM.dragEnd(event)">
+          <div class="card-top">
+            <div>
+              <div class="card-company">${esc(c.company)}</div>
+              <div class="card-contact">${esc(c.name)}</div>
+            </div>
+            <div class="card-actions">
+              <button class="icon-btn" title="Editar" onclick="CRM.openModal('${c.id}')"><svg class="icon icon-sm"><use href="#i-edit"/></svg></button>
+              <button class="icon-btn danger" title="Eliminar" onclick="CRM.deleteClient('${c.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button>
+            </div>
+          </div>
+          <div class="card-amount">${fmt(c.amount)}</div>
+          <div class="card-meta">
+            <span><svg class="icon icon-sm"><use href="#i-calendar"/></svg>${fmtDate(c.lastTouch)}</span>
+            <span class="avatar" title="${esc(c.owner)}">${initials(c.owner)}</span>
+          </div>
+        </article>`).join('');
+      return `
+        <div class="col" data-stage="${st.key}"
+             ondragover="CRM.dragOver(event)" ondragleave="CRM.dragLeave(event)" ondrop="CRM.drop(event,'${st.key}')">
+          <div class="col-head">
+            <span class="stage-name"><span class="stage-dot" style="background:${st.color}"></span>${st.label}</span>
+            <span class="count">${list.length}</span>
+          </div>
+          <div class="col-total">${fmt(total)}</div>
+          <div class="col-cards">${cards || '<div class="col-empty">Arrastra una tarjeta aquí</div>'}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function dragStart(e, id) {
+    dragId = id;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', id);
+    requestAnimationFrame(() => e.target.classList.add('dragging'));
+  }
+  function dragEnd(e) { e.target.classList.remove('dragging'); dragId = null; }
+  function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+  function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+  function drop(e, stageKey) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const id = dragId || e.dataTransfer.getData('text/plain');
+    const c = clients.find(x => x.id === id);
+    if (!c || c.stage === stageKey) return;
+    c.stage = stageKey;
+    c.lastTouch = new Date().toISOString().slice(0, 10);
+    c.history = c.history || [];
+    c.history.push({ s: stageKey, d: c.lastTouch });
+    save();
+    renderAll();
+    toast(`${c.company} → ${stageOf(stageKey).label}`);
+  }
+
+  /* ── TABLA + FILTROS ── */
+  function renderTable() {
+    const q = document.getElementById('globalSearch').value.trim().toLowerCase();
+    const fStage = document.getElementById('fStage').value;
+    const fAmount = document.getElementById('fAmount').value;
+    const fDate = document.getElementById('fDate').value;
+
+    let rows = clients.slice().sort((a, b) => new Date(b.lastTouch) - new Date(a.lastTouch));
+    if (q) rows = rows.filter(c => c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q));
+    if (fStage) rows = rows.filter(c => c.stage === fStage);
+    if (fAmount) {
+      const [min, max] = fAmount.split('-').map(Number);
+      rows = rows.filter(c => c.amount >= min && c.amount <= max);
+    }
+    if (fDate) {
+      const cutoff = Date.now() - Number(fDate) * 86400000;
+      rows = rows.filter(c => new Date(c.lastTouch).getTime() >= cutoff);
+    }
+
+    const body = document.getElementById('clientsBody');
+    document.getElementById('tableEmpty').style.display = rows.length ? 'none' : 'block';
+    body.innerHTML = rows.map(c => {
+      const st = stageOf(c.stage);
+      return `
+      <tr>
+        <td class="td-name">${esc(c.name)}<small>desde ${fmtDate(c.date)}</small></td>
+        <td><span style="display:inline-flex;align-items:center;gap:7px">
+          <svg class="icon icon-sm" style="color:var(--text-muted)"><use href="#i-building"/></svg>${esc(c.company)}</span></td>
+        <td class="td-amount">${fmt(c.amount)}</td>
+        <td><span class="stage-pill" style="color:${st.color};border-color:${st.color};background:${st.bg}">
+          <span class="stage-dot" style="background:${st.color};width:7px;height:7px"></span>${st.label}</span></td>
+        <td class="td-muted"><span style="display:inline-flex;align-items:center;gap:6px">
+          <svg class="icon icon-sm"><use href="#i-clock"/></svg>${fmtDate(c.lastTouch)} · hace ${daysBetween(c.lastTouch, new Date().toISOString().slice(0,10))} d</span></td>
+        <td><span style="display:inline-flex;align-items:center;gap:8px">
+          <span class="avatar">${initials(c.owner)}</span><span class="td-muted">${esc(c.owner)}</span></span></td>
+        <td style="text-align:right">
+          <button class="icon-btn" title="Editar" onclick="CRM.openModal('${c.id}')"><svg class="icon icon-sm"><use href="#i-edit"/></svg></button>
+          <button class="icon-btn danger" title="Eliminar" onclick="CRM.deleteClient('${c.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function clearFilters() {
+    ['fStage', 'fAmount', 'fDate'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('globalSearch').value = '';
+    renderAll();
+  }
+
+  /* ── REPORTES ── */
+  function renderReports() {
+    const total = clients.length;
+    const won = clients.filter(c => c.stage === 'completado').length;
+    const winRate = total ? Math.round((won / total) * 100) : 0;
+    document.getElementById('rWinRate').innerHTML = winRate + '<small>%</small>';
+    document.getElementById('rWinBar').style.width = winRate + '%';
+    document.getElementById('rWinDetail').textContent = `${won} completados de ${total} clientes en cartera`;
+
+    /* tiempo promedio por etapa (de stageHistory) */
+    const sums = {}, counts = {};
+    clients.forEach(c => {
+      const h = c.history || [];
+      for (let i = 0; i < h.length - 1; i++) {
+        const d = daysBetween(h[i].d, h[i + 1].d);
+        sums[h[i].s] = (sums[h[i].s] || 0) + d;
+        counts[h[i].s] = (counts[h[i].s] || 0) + 1;
+      }
+    });
+    const avgs = STAGES.slice(0, 4).map(st => ({
+      st, days: counts[st.key] ? Math.round(sums[st.key] / counts[st.key]) : 0
+    }));
+    const maxDays = Math.max(...avgs.map(a => a.days), 1);
+    document.getElementById('rStageTimes').innerHTML = avgs.map(a => `
+      <div class="stage-time-row">
+        <span class="lbl">${a.st.label}</span>
+        <span class="bar"><i style="width:${(a.days / maxDays) * 100}%;background:${a.st.color}"></i></span>
+        <span class="val">${a.days} d</span>
+      </div>`).join('');
+
+    /* MRR / ARR */
+    const mrr = clients.filter(c => c.stage === 'completado').reduce((s, c) => s + (c.mrr || 0), 0);
+    document.getElementById('rMRR').textContent = fmtK(mrr);
+    document.getElementById('rARR').textContent = fmtK(mrr * 12);
+    const hist = [0.45, 0.5, 0.55, 0.62, 0.7, 0.82, 0.9, 1].map(f => Math.round(mrr * f));
+    const max = Math.max(...hist, 1);
+    const pts = hist.map((v, i) => `${(i / (hist.length - 1)) * 240},${42 - (v / max) * 36}`).join(' ');
+    document.getElementById('rMRRSpark').innerHTML =
+      `<polyline points="${pts}" fill="none" stroke="var(--purple)" stroke-width="2.5" stroke-linecap="round"/>
+       <polygon points="0,46 ${pts} 240,46" fill="var(--purple)" opacity="0.12"/>`;
+
+    /* top clientes por valor */
+    const top = clients.slice().sort((a, b) => b.amount - a.amount).slice(0, 5);
+    document.getElementById('rTopClients').innerHTML = top.map((c, i) => `
+      <div class="top-client-row">
+        <span class="rank">${i + 1}</span>
+        <span class="name">${esc(c.company)}<small>${esc(c.name)} · ${stageOf(c.stage).label}</small></span>
+        <span class="amt">${fmt(c.amount)}</span>
+      </div>`).join('');
+  }
+
+  function toggleReports() {
+    document.getElementById('reportsPanel').classList.toggle('open');
+  }
+
+  /* ── CRUD MODAL ── */
+  function openModal(id) {
+    const sel = document.getElementById('cStage');
+    sel.innerHTML = STAGES.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+    const c = clients.find(x => x.id === id);
+    document.getElementById('modalTitle').textContent = c ? 'Editar cliente' : 'Nuevo cliente';
+    document.getElementById('saveLabel').textContent = c ? 'Actualizar' : 'Guardar';
+    document.getElementById('cId').value      = c ? c.id : '';
+    document.getElementById('cName').value    = c ? c.name : '';
+    document.getElementById('cCompany').value = c ? c.company : '';
+    document.getElementById('cAmount').value  = c ? c.amount : '';
+    document.getElementById('cMrr').value     = c ? (c.mrr || 0) : 0;
+    document.getElementById('cStage').value   = c ? c.stage : 'prospecto';
+    document.getElementById('cOwner').value   = c ? c.owner : 'Victor IA';
+    document.getElementById('cDate').value    = c ? c.date : new Date().toISOString().slice(0, 10);
+    document.getElementById('modalOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('cName').focus(), 60);
+  }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+  function saveClient(e) {
+    e.preventDefault();
+    const id = document.getElementById('cId').value;
+    const today = new Date().toISOString().slice(0, 10);
+    const data = {
+      name:    document.getElementById('cName').value.trim(),
+      company: document.getElementById('cCompany').value.trim(),
+      amount:  Number(document.getElementById('cAmount').value) || 0,
+      mrr:     Number(document.getElementById('cMrr').value) || 0,
+      stage:   document.getElementById('cStage').value,
+      owner:   document.getElementById('cOwner').value,
+      date:    document.getElementById('cDate').value
+    };
+    if (id) {
+      const c = clients.find(x => x.id === id);
+      const stageChanged = c.stage !== data.stage;
+      Object.assign(c, data, { lastTouch: today });
+      if (stageChanged) { c.history = c.history || []; c.history.push({ s: data.stage, d: today }); }
+      toast(`${c.company} actualizado`);
+    } else {
+      const nid = 'c' + Date.now().toString(36);
+      clients.push({ id: nid, ...data, lastTouch: today, history: [{ s: data.stage, d: data.date }] });
+      toast(`${data.company} agregado al pipeline`);
+    }
+    save();
+    closeModal();
+    renderAll();
+  }
+
+  function deleteClient(id) {
+    const c = clients.find(x => x.id === id);
+    if (!c) return;
+    if (!confirm(`¿Eliminar a ${c.company} del CRM?`)) return;
+    clients = clients.filter(x => x.id !== id);
+    FirestoreMock.collection('clients').doc(id).delete();
+    save();
+    renderAll();
+    toast(`${c.company} eliminado`, 'err');
+  }
+
+  /* ── VISTAS ── */
+  function setView(v) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+    document.querySelectorAll('.view').forEach(s => s.classList.toggle('active', s.id === 'view-' + v));
+  }
+
+  function renderAll() {
+    renderKPIs();
+    renderPipeline();
+    renderTable();
+    renderReports();
+  }
+
+  /* ── INIT ── */
+  function init() {
+    load();
+    const fStage = document.getElementById('fStage');
+    fStage.innerHTML = '<option value="">Todas las etapas</option>' +
+      STAGES.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+    document.getElementById('globalSearch').addEventListener('input', () => { renderPipeline(); renderTable(); });
+    document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    renderAll();
+    /* abre reportes por defecto en desktop */
+    if (window.innerWidth > 900) document.getElementById('reportsPanel').classList.add('open');
+  }
+
+  return { init, setView, toggleReports, openModal, closeModal, saveClient, deleteClient,
+           dragStart, dragEnd, dragOver, dragLeave, drop, renderTable, clearFilters };
+})();
+
+document.addEventListener('DOMContentLoaded', CRM.init);
+</script>
+</body>
+</html>
